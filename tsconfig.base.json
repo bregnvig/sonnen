@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@sonnen/weather": ["libs/weather/src/index.ts"]
+      "@sonnen/weather": ["libs/backend/weather/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

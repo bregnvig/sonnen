@@ -1,0 +1,20 @@
+{
+  "name": "weather",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/weather/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/weather",
+        "tsConfig": "libs/backend/weather/tsconfig.lib.json",
+        "packageJson": "libs/backend/weather/package.json",
+        "main": "libs/backend/weather/src/index.ts",
+        "assets": ["libs/backend/weather/*.md"]
+      }
+    }
+  },
+  "tags": ["lib:nestjs"]
+}
