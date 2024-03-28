@@ -51,3 +51,5 @@ pubsub-debug.log
 ui-debug.log
 firebase-export*
 .secret.local
+/apps/seeder/src/environments
+/saved-data

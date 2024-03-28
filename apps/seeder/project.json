@@ -25,8 +25,16 @@
         }
       },
       "configurations": {
-        "development": {},
+        "development": {
+
+        },
         "production": {
+          "fileReplacements": [
+            {
+              "replace": "./environments/environment.ts",
+              "with": "./environments/environment.prod.ts"
+            }
+          ],
           "esbuildOptions": {
             "sourcemap": false,
             "outExtension": {
