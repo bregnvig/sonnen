@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@sonnen/data": ["libs/data/src/index.ts"],
       "@sonnen/utils": ["libs/utils/src/index.ts"],
       "@sonnen/weather": ["libs/backend/weather/src/index.ts"]
     }

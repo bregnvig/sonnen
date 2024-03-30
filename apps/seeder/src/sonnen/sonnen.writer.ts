@@ -1,14 +1,25 @@
+import { SonnenMeasurement, SonnenDay } from '@sonnen/data';
 import { getFirestore } from 'firebase-admin/firestore';
 import { converter } from '../utils/timestamp.converter';
-import { ProductionSet } from './sonnen.model';
 
-export const writeProductSet = async (productionSet: ProductionSet[]): Promise<number> => {
+export const writeMeasurements = async (measurements: SonnenMeasurement[]): Promise<number> => {
 
   const db = getFirestore();
 
+  const sonnen = db.collection('sonnen/measurement/entries');
   return db.runTransaction(transaction => {
-    const sonnen = db.collection('sonnen');
-    productionSet.forEach(set => transaction.set(sonnen.doc(set.timestamp.toISO()).withConverter(converter), set));
-    return Promise.resolve(productionSet.length);
+    measurements.forEach(set => transaction.set(sonnen.doc(set.timestamp.toISO()).withConverter(converter), set));
+    return Promise.resolve(measurements.length);
+  });
+};
+
+export const writeStatistics = async (measurements: SonnenDay[]): Promise<number> => {
+
+  const db = getFirestore();
+
+  const sonnen = db.collection('sonnen/statistics/entries');
+  return db.runTransaction(transaction => {
+    measurements.forEach(set => transaction.set(sonnen.doc(set.timestamp.toISO()).withConverter(converter), set));
+    return Promise.resolve(measurements.length);
   });
 };
