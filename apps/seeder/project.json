@@ -4,46 +4,6 @@
   "sourceRoot": "apps/seeder/src",
   "projectType": "application",
   "targets": {
-    "build": {
-      "executor": "@nx/esbuild:esbuild",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "platform": "node",
-        "outputPath": "dist",
-        "format": ["esm"],
-        "bundle": false,
-        "main": "apps/seeder/src/main.ts",
-        "tsConfig": "apps/seeder/tsconfig.app.json",
-        "assets": ["apps/seeder/src/assets"],
-        "generatePackageJson": true,
-        "esbuildOptions": {
-          "sourcemap": true,
-          "outExtension": {
-            ".js": ".js"
-          }
-        }
-      },
-      "configurations": {
-        "development": {
-
-        },
-        "production": {
-          "fileReplacements": [
-            {
-              "replace": "./environments/environment.ts",
-              "with": "./environments/environment.prod.ts"
-            }
-          ],
-          "esbuildOptions": {
-            "sourcemap": false,
-            "outExtension": {
-              ".js": ".js"
-            }
-          }
-        }
-      }
-    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
@@ -58,14 +18,7 @@
           "buildTarget": "seeder:build:production"
         }
       }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/seeder/jest.config.ts"
-      }
     }
   },
-  "tags": []
+  "tags": ["app:seeder"]
 }

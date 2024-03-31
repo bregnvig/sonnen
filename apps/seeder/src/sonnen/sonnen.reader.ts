@@ -11,12 +11,22 @@ const filterRow = (length: number, line: string): boolean => {
   return [
     DateTime.fromISO(timestamp).isValid,
     numbers.length === length,
-    numbers.every(n => !isNaN(parseFloat(n)))
+    numbers.every((n) => !isNaN(parseFloat(n))),
   ].every(Boolean);
 };
 
 const parseMeasurement = (line: string): SonnenMeasurement => {
-  const [timestamp, production, consumption, batteryCharge, batteryDischarge, gridFeedIn, gridConsumption, batteryStateOfCharge, directConsumption] = line.split(',');
+  const [
+    timestamp,
+    production,
+    consumption,
+    batteryCharge,
+    batteryDischarge,
+    gridFeedIn,
+    gridConsumption,
+    batteryStateOfCharge,
+    directConsumption,
+  ] = line.split(',');
   return {
     timestamp: DateTime.fromISO(timestamp),
     production: parseFloat(production),
@@ -26,18 +36,19 @@ const parseMeasurement = (line: string): SonnenMeasurement => {
     gridFeedIn: parseFloat(gridFeedIn),
     gridConsumption: parseFloat(gridConsumption),
     batteryStateOfCharge: parseFloat(batteryStateOfCharge),
-    directConsumption: parseFloat(directConsumption)
+    directConsumption: parseFloat(directConsumption),
   };
 };
 
 const parseDay = (line: string): SonnenDay => {
-  const [timestamp,
+  const [
+    timestamp,
     producedEnergy,
     consumedEnergy,
     batteryChargedEnergy,
     batteryDischargedEnergy,
     gridFeedinEnergy,
-    gridPurchaseEnergy
+    gridPurchaseEnergy,
   ] = line.split(',');
   return {
     timestamp: DateTime.fromISO(timestamp),
@@ -50,25 +61,27 @@ const parseDay = (line: string): SonnenDay => {
   };
 };
 
-export const readMeasurements = async (filename: string): Promise<SonnenMeasurement[]> => {
-
+export const readMeasurements = async (
+  filename: string
+): Promise<SonnenMeasurement[]> => {
   return readFile(filename, 'utf8')
-    .then(content => content.split('\n'))
-    .then(lines => lines.filter(filterMeasurement))
-    .then(lines => lines.map(parseMeasurement))
-    .catch(error => {
+    .then((content) => content.split('\n'))
+    .then((lines) => lines.filter(filterMeasurement))
+    .then((lines) => lines.map(parseMeasurement))
+    .catch((error) => {
       console.error(`Error reading file ${filename}`, error);
       throw error;
     });
 };
 
-export const readStatistics = async (filename: string): Promise<SonnenDay[]> => {
-
+export const readStatistics = async (
+  filename: string
+): Promise<SonnenDay[]> => {
   return readFile(filename, 'utf8')
-    .then(content => content.split('\n'))
-    .then(lines => lines.filter(filterDay))
-    .then(lines => lines.map(parseDay))
-    .catch(error => {
+    .then((content) => content.split('\n'))
+    .then((lines) => lines.filter(filterDay))
+    .then((lines) => lines.map(parseDay))
+    .catch((error) => {
       console.error(`Error reading file ${filename}`, error);
       throw error;
     });
