@@ -10,8 +10,10 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
 
-// import { initializeApp } from "firebase-admin/app";
-// initializeApp()
+import { initializeApp } from "firebase-admin/app";
+initializeApp();
+
+export * from './statistics' ;
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

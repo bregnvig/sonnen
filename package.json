@@ -2,7 +2,11 @@
   "name": "@sonnen/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "serve:ui": "nx serve ui",
+    "serve:integration": "nx run integration-firebase:watch",
+    "serve:backend": "nx serve backend"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~17.2.0",

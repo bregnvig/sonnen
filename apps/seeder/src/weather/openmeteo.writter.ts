@@ -1,6 +1,6 @@
 import { Weather } from '@sonnen/data';
 import { getFirestore } from 'firebase-admin/firestore';
-import { converter } from '../utils/timestamp.converter';
+import { converter } from '@sonnen/firebase';
 
 export const writeHistoricalWeather = async (weather: Weather[]): Promise<number> => {
   // Write the weather data to the database

@@ -1,6 +1,6 @@
 import { SonnenMeasurement, SonnenDay } from '@sonnen/data';
+import { converter } from '@sonnen/firebase';
 import { getFirestore } from 'firebase-admin/firestore';
-import { converter } from '../utils/timestamp.converter';
 
 export const writeMeasurements = async (measurements: SonnenMeasurement[]): Promise<number> => {
 

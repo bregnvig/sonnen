@@ -10,8 +10,8 @@
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
-        "outputPath": "dist/apps/seeder",
-        "format": ["cjs"],
+        "outputPath": "dist",
+        "format": ["esm"],
         "bundle": false,
         "main": "apps/seeder/src/main.ts",
         "tsConfig": "apps/seeder/tsconfig.app.json",
