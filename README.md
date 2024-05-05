@@ -8,14 +8,56 @@ If you need to populate the firebase emulator use `export FIRESTORE_EMULATOR_HOS
 
 An environment file must be provided:
 
+### Open-Meteo Historical Weather API
+
+Set the environment to 
+
+```TypeScript
+historicalWeather: {
+    lat: 55.7933429,
+    lng: 12.3628315,
+    start: '2022-06-30',
+    end: '2022-12-31',
+  }
+```	
+
+### Points - Power data in Watts
+
+Provided data: Discharge, Charge, Consumption, Production. 
+
+Resolution: 3 hours
+
+Can be downloaded from my.sonnen.de
+
 ```TypeScript
 export const environment = {
   firebase: {
     // Firebase service account
   },
-  files: [
-    '../Sonnen2022.csv',
-    '../Sonnen2023.csv'
+  points: [
+    './assets/Power data in Watt 2022.csv',
+    './assets/Power data in Watt 2023.csv'
+  ]
+};
+
+```
+
+### Statics - Energy data in Watt hours
+
+Provided data: Discharge, Charge, Consumption, Production, Feed-in, Grid purchase. 
+
+Resolution: 1 day
+
+Can be downloaded from my.sonnen.de
+
+```TypeScript
+export const environment = {
+  firebase: {
+    // Firebase service account
+  },
+  statistics: [
+    './assets/Energy data in watthours 2022.csv',
+    './assets/Energy data in watthours 2022.csv'
   ]
 };
 

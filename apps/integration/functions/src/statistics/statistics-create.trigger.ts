@@ -1,12 +1,16 @@
 import { SonnenDay, Weather } from '@sonnen/data';
-import { getFirestore, Timestamp } from 'firebase-admin/firestore';
-import { region } from 'firebase-functions';
-import { DocumentSnapshot } from 'firebase-functions/v1/firestore';
 import { firestoreUtils } from '@sonnen/firebase';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
-export const newStatistic = region('europe-west1').firestore.document('sonnen/statistics/entries/{date}')
-  .onCreate(async (snapshot: DocumentSnapshot) => {
-    const data = firestoreUtils.convertTimestamps(snapshot.data()) as SonnenDay;
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
+
+export const newStatistic = onDocumentCreated({
+    document: 'sonnen/statistics/entries/{date}',
+    region: 'europe-west1'
+  },
+  async event => {
+    event
+    const data = firestoreUtils.convertTimestamps(event.data.data()) as SonnenDay;
     const db = getFirestore();
 
     const start = firestoreUtils.convertDateTime(data.timestamp.startOf('day').set({ 'hour': 6 })) as Timestamp;
@@ -17,6 +21,6 @@ export const newStatistic = region('europe-west1').firestore.document('sonnen/st
       return weather.reduce((acc, cur) => acc + cur.cloud, 0) / weather.length;
     });
 
-
-  });
+  }
+);
 

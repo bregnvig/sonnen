@@ -1,6 +1,7 @@
-import { SonnenMeasurement, SonnenDay } from '@sonnen/data';
+import { SonnenDay, SonnenMeasurement } from '@sonnen/data';
 import { readFile } from 'fs/promises';
 import { DateTime } from 'luxon';
+import * as path from 'path';
 
 const filterMeasurement = (line: string): boolean => filterRow(8, line);
 
@@ -64,6 +65,8 @@ const parseDay = (line: string): SonnenDay => {
 export const readMeasurements = async (
   filename: string
 ): Promise<SonnenMeasurement[]> => {
+  const pp = path.resolve(filename);
+  console.log(pp);
   return readFile(filename, 'utf8')
     .then((content) => content.split('\n'))
     .then((lines) => lines.filter(filterMeasurement))
