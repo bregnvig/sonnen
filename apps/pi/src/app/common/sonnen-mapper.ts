@@ -1,0 +1,36 @@
+import { EnergySystemStatus, SonnenEnergySystemStatus } from './sonnen.model';
+
+export function sonnenStatus(input: SonnenEnergySystemStatus): EnergySystemStatus {
+  return {
+    apparentOutput: input.Apparent_output,
+    backupBuffer: input.BackupBuffer,
+    batteryCharging: input.BatteryCharging,
+    batteryDischarging: input.BatteryDischarging,
+    consumptionAvg: input.Consumption_Avg,
+    consumptionW: input.Consumption_W,
+    fac: input.Fac,
+    flowConsumptionBattery: input.FlowConsumptionBattery,
+    flowConsumptionGrid: input.FlowConsumptionGrid,
+    flowConsumptionProduction: input.FlowConsumptionProduction,
+    flowGridBattery: input.FlowGridBattery,
+    flowProductionBattery: input.FlowProductionBattery,
+    flowProductionGrid: input.FlowProductionGrid,
+    gridFeedInW: input.GridFeedIn_W,
+    isSystemInstalled: input.IsSystemInstalled,
+    operatingMode: input.OperatingMode,
+    pacTotalW: input.Pac_total_W,
+    productionW: input.Production_W,
+    rsoc: input.RSOC,
+    remainingCapacityW: input.RemainingCapacity_W,
+    sac1: input.Sac1,
+    sac2: input.Sac2,
+    sac3: input.Sac3,
+    systemStatus: input.SystemStatus,
+    timestamp: input.Timestamp,
+    usoc: input.USOC,
+    uac: input.Uac,
+    ubat: input.Ubat,
+    dischargeNotAllowed: input.dischargeNotAllowed,
+    generatorAutostart: input.generator_autostart,
+  };
+}
