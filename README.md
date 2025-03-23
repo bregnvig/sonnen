@@ -45,6 +45,12 @@ sudo systemctl enable sonnen
 sudo systemctl start sonnen
 ``` 
 
+Check status:
+
+```bash
+sudo systemctl status sonnen
+```
+
 Make sure `User` has write access to log files.
 
 ```bash
