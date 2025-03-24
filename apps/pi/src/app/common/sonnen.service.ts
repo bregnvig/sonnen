@@ -25,7 +25,9 @@ export class SonnenService {
   }
 
   charge(watts = 2000) {
-    return this.http.post(`setpoint/charge/${watts}`);
+    return this.http.post<boolean>(`setpoint/charge/${watts}`).pipe(
+      map(response => response.data),
+    );
   }
 
   stop() {
