@@ -19,6 +19,7 @@
     "@nestjs/platform-express": "^10.0.2",
     "@nestjs/schedule": "^5.0.1",
     "axios": "^1.8.4",
+    "luxon": "^3.5.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~7.8.0",
     "zone.js": "~0.15.0"
@@ -48,6 +49,7 @@
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
     "@types/jest": "^29.5.12",
+    "@types/luxon": "^3.4.2",
     "@types/node": "18.16.9",
     "@typescript-eslint/utils": "^8.19.0",
     "angular-eslint": "^19.2.0",
@@ -57,6 +59,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jest-preset-angular": "~14.4.0",
+    "jsonc-eslint-parser": "^2.1.0",
     "nx": "20.6.2",
     "prettier": "^2.6.2",
     "ts-jest": "^29.1.0",

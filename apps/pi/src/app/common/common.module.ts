@@ -1,7 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { SONNEN_API_KEY } from './api-key';
-import { SonnenService } from './sonnen.service';
+import { SonnenService } from './';
 
 @Module({
   imports: [HttpModule.register({
@@ -10,13 +9,7 @@ import { SonnenService } from './sonnen.service';
       'Auth-Token': process.env.SONNEN_API_KEY,
     },
   })],
-  providers: [
-    {
-      provide: SONNEN_API_KEY,
-      useValue: process.env.SONNEN_API_KEY,
-    },
-    SonnenService,
-  ],
+  providers: [SonnenService],
   exports: [SonnenService],
 })
 export class CommonModule {}

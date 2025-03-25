@@ -1,4 +1,4 @@
-export interface SonnenEnergySystemStatus {
+export interface SonnenLatestData {
   Apparent_output: number; // VA - All AC output of apparent power
   BackupBuffer: number; // % - Backup-buffer in percentage
   BatteryCharging: boolean; // True if charging
@@ -29,37 +29,4 @@ export interface SonnenEnergySystemStatus {
   Ubat: number; // V - Battery voltage
   dischargeNotAllowed: boolean; // True if discharge not allowed
   generator_autostart: boolean; // True if generator autostart is enabled
-}
-
-export interface EnergySystemStatus {
-  apparentOutput: number;
-  backupBuffer: number;
-  batteryCharging: boolean;
-  batteryDischarging: boolean;
-  consumptionAvg: number;
-  consumptionW: number;
-  fac: number;
-  flowConsumptionBattery: boolean;
-  flowConsumptionGrid: boolean;
-  flowConsumptionProduction: boolean;
-  flowGridBattery: boolean;
-  flowProductionBattery: boolean;
-  flowProductionGrid: boolean;
-  gridFeedInW: number;
-  isSystemInstalled: number;
-  operatingMode: number;
-  pacTotalW: number;
-  productionW: number;
-  rsoc: number;
-  remainingCapacityW: number;
-  sac1: number;
-  sac2: number;
-  sac3: number;
-  systemStatus: string; // or 'OnGrid' | 'OffGrid'
-  timestamp: string;
-  usoc: number;
-  uac: number;
-  ubat: number;
-  dischargeNotAllowed: boolean;
-  generatorAutostart: boolean;
 }

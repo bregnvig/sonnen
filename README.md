@@ -58,3 +58,16 @@ sudo touch /var/log/sonnen.log /var/log/sonnen-error.log
 sudo chown pi:pi /var/log/sonnen*.log
 ```
 
+## Development with firestore
+
+Use environment to decide which firestore database to populate.
+
+If you need to populate the firebase emulator use `export FIRESTORE_EMULATOR_HOST="localhost:8080"`. Remember to start the emulator before executing the builder.
+
+### Starting emulators
+
+1. Run emulators
+   use `firebase emulators:start --only=functions,firestore,auth,pubsub --config=firebase.json --export-on-exit=./saved-data --import=./saved-data --inspect-functions`
+   Delete `export`, `import` and/or `--inspect-functions` if not wanted
+   2If ports are already taken, run `npm run kill-ports`
+
