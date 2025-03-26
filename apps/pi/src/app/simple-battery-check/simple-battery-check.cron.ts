@@ -15,17 +15,18 @@ export class SimpleBatteryCheckService {
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
 
       const status = await firstValueFrom(this.service.getLatestData());
-      const Minuttes = (maxChargeTime - status.usoc);
-      this.#logger.debug(`Charge minutes: ${Minuttes}`);
+      const minuttes = (maxChargeTime - status.usoc);
+      this.#logger.debug(`Charge minutes: ${minuttes}`);
 
-      if (Minuttes > 0) {
-        this.#logger.warn(`Battery low. Charge battery for ${Minuttes} minutes`);
+      if (minuttes > 0) {
+        this.#logger.warn(`Battery low. Charge battery for ${minuttes} minutes`);
         await firstValueFrom(this.service.charge());
         const timeout = setTimeout(async () => {
           this.#logger.log('Battery charge timeout. Stop charging');
           this.#logger.log(`Battery level ${(await firstValueFrom(this.service.getLatestData())).usoc}`);
           await firstValueFrom(this.service.stop());
-        }, Minuttes * 60 * 1000);
+        }, minuttes * 60 * 1000);
+        this.schedulerRegistry.deleteTimeout(`battery-charge-stop`);
         this.schedulerRegistry.addTimeout(`battery-charge-stop`, timeout);
       } else {
         this.#logger.log('Sufficient battery level', status.usoc);

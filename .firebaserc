@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "sonnen-86a54"
+    "default": "sonnen-phony",
+    "production": "sonnen-86a54",
   }
 }
