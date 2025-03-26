@@ -26,7 +26,11 @@ export class SimpleBatteryCheckService {
           this.#logger.log(`Battery level ${(await firstValueFrom(this.service.getLatestData())).usoc}`);
           await firstValueFrom(this.service.stop());
         }, minuttes * 60 * 1000);
-        this.schedulerRegistry.deleteTimeout(`battery-charge-stop`);
+        try {
+          this.schedulerRegistry.deleteTimeout(`battery-charge-stop`);
+        } catch (error) {
+          this.#logger.debug('No timeout to delete');
+        }
         this.schedulerRegistry.addTimeout(`battery-charge-stop`, timeout);
       } else {
         this.#logger.log('Sufficient battery level', status.usoc);
