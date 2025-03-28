@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@sonnen/data": ["libs/data/src/index.ts"]
+      "@sonnen/data": ["libs/data/src/index.ts"],
+      "@sonnen/utils": ["libs/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
