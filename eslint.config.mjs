@@ -23,6 +23,7 @@ export default [
           ],
         },
       ],
+      '@typescript-eslint/no-unused-expressions': 'off',
     },
   },
   {

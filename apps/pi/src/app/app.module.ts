@@ -1,8 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { isNullish } from '@sonnen/utils';
+import { of, switchMap } from 'rxjs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CommonModule, SonnenService } from './common';
 import { SimpleBatteryCheckModule } from './simple-battery-check';
 import { StatusModule } from './status';
 
@@ -12,6 +15,7 @@ import { StatusModule } from './status';
     ConfigModule.forRoot(),
     SimpleBatteryCheckModule,
     StatusModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [
@@ -19,4 +23,10 @@ import { StatusModule } from './status';
   ],
 })
 export class AppModule {
+  constructor(service: SonnenService) {
+    const logger = new Logger(AppModule.name);
+    service.isManual().pipe(
+      switchMap(isManual => isManual ? service.automaticMode() : of(undefined)),
+    ).subscribe(value => logger.log(isNullish(value) ? 'Already in automatic mode' : 'Changed to automatic mode'));
+  }
 }

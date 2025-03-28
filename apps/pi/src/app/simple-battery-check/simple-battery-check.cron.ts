@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import * as process from 'node:process';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, map } from 'rxjs';
 import { SonnenService } from '../common';
 
 @Injectable()
@@ -20,7 +20,14 @@ export class SimpleBatteryCheckService {
 
       if (minuttes > 0) {
         this.#logger.warn(`Battery low. Charge battery for ${minuttes} minutes`);
-        await firstValueFrom(this.service.charge());
+        const success = await firstValueFrom(this.service.charge().pipe(
+          map(() => true),
+          catchError(error => {
+            this.#logger.error('Error charging battery', error);
+            return this.service.automaticMode().pipe(map(() => false));
+          }),
+        ));
+        if (!success) return;
         const timeout = setTimeout(async () => {
           this.#logger.log('Battery charge timeout. Stop charging');
           this.#logger.log(`Battery level ${(await firstValueFrom(this.service.getLatestData())).usoc}`);
@@ -28,7 +35,7 @@ export class SimpleBatteryCheckService {
         }, minuttes * 60 * 1000);
         try {
           this.schedulerRegistry.deleteTimeout(`battery-charge-stop`);
-        } catch (error) {
+        } catch {
           this.#logger.debug('No timeout to delete');
         }
         this.schedulerRegistry.addTimeout(`battery-charge-stop`, timeout);
