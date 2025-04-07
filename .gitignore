@@ -43,3 +43,4 @@ Thumbs.db
 
 .angular
 apps/pi/.env
+/*-debug.log

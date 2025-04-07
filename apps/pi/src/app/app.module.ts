@@ -6,6 +6,7 @@ import { of, switchMap } from 'rxjs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule, SonnenService } from './common';
+import { FirestoreModule } from './firestore';
 import { SimpleBatteryCheckModule } from './simple-battery-check';
 import { StatusModule } from './status';
 
@@ -13,6 +14,7 @@ import { StatusModule } from './status';
   imports: [
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
+    FirestoreModule,
     SimpleBatteryCheckModule,
     StatusModule,
     CommonModule,
