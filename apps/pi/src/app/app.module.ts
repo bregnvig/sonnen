@@ -27,11 +27,12 @@ import { StatusModule } from './status';
   ],
 })
 export class AppModule implements OnModuleInit, OnModuleDestroy {
+  #logger = new Logger(AppModule.name);
+
   constructor(service: SonnenService, private firestore: FirestoreService) {
-    const logger = new Logger(AppModule.name);
     service.isManual().pipe(
       switchMap(isManual => isManual ? service.automaticMode() : of(undefined)),
-    ).subscribe(value => logger.log(isNullish(value) ? 'Already in automatic mode' : 'Changed to automatic mode'));
+    ).subscribe(value => this.#logger.log(isNullish(value) ? 'Already in automatic mode' : 'Changed to automatic mode'));
   }
 
   async onModuleInit() {
@@ -41,7 +42,9 @@ export class AppModule implements OnModuleInit, OnModuleDestroy {
       timestamp: firestore.Timestamp.now(),
       source: `AppModule:Ready`,
       type: 'info',
-    } as SonnenEvent);
+    } as SonnenEvent).catch(error => {
+      this.#logger.error('Failed to start sonnen', error);
+    });
   }
 
   async onModuleDestroy() {
