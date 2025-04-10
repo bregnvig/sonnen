@@ -1,7 +1,6 @@
-@forward 'node_modules/@fontsource/roboto/300.css';
-@forward 'node_modules/@fontsource/roboto/400.css';
-@forward 'node_modules/@fontsource/roboto/500.css';
-@forward 'node_modules/@fontsource/material-icons/index.css';
+@forward '@fontsource/roboto/300.css';
+@forward '@fontsource/roboto/400.css';
+@forward '@fontsource/roboto/500.css';
 @use '@angular/material' as mat;
 
 @tailwind base;
