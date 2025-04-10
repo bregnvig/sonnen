@@ -1,1 +1,1 @@
-export * from './lib/api/api.component';
+export * from './lib/user';

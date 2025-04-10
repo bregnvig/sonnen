@@ -7,6 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
+import { LoadingComponent } from '@sonnen/common';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -20,6 +21,7 @@ import { map } from 'rxjs/operators';
     MatListModule,
     MatIconModule,
     RouterOutlet,
+    LoadingComponent,
   ],
 })
 export class HomeComponent {

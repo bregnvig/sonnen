@@ -1,0 +1,27 @@
+div {
+  display: flex;
+  position: fixed;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+
+  img {
+    margin: 0 32px;
+    animation: rotate 6s linear infinite;
+    display: inline-block;
+    width: 120px;
+    height: auto;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

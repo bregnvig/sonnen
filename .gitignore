@@ -47,3 +47,4 @@ apps/pi/.env
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+/apps/ui/src/environments/
