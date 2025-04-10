@@ -1,19 +1,29 @@
+@forward 'node_modules/@fontsource/roboto/300.css';
+@forward 'node_modules/@fontsource/roboto/400.css';
+@forward 'node_modules/@fontsource/roboto/500.css';
+@forward 'node_modules/@fontsource/material-icons/index.css';
 @use '@angular/material' as mat;
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
   margin: 0;
   height: 100%;
 
-  @include mat.theme((
-    color: (
-      theme-type: light,
-      primary: mat.$cyan-palette,
-      tertiary: mat.$orange-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  @include mat.theme(
+      (
+        color: (
+          theme-type: light,
+          primary: mat.$cyan-palette,
+          tertiary: mat.$orange-palette,
+        ),
+        typography: Roboto,
+        density: 0,
+      )
+  );
 }
 
 html {
