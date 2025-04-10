@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@sonnen/api": ["libs/ui/api/src/index.ts"],
       "@sonnen/common": ["libs/ui/common/src/index.ts"],
       "@sonnen/data": ["libs/data/src/index.ts"],
       "@sonnen/utils": ["libs/utils/src/index.ts"]
