@@ -2,7 +2,7 @@
   "name": "events",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/ui/events/src",
-  "prefix": "lib",
+  "prefix": "events",
   "projectType": "library",
   "tags": [],
   "targets": {

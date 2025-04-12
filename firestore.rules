@@ -11,6 +11,10 @@ service cloud.firestore {
       allow create: if getUserData().roles.hasAny(['admin']) || request.auth.uid != null && validCreate();
     }
 
+    match /events/{Events} {
+      allow read: if request.auth.uid != null && getUserData().roles.hasAny(['admin'])
+    }
+
 
     function getUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data

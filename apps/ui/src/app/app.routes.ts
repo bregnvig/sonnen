@@ -21,17 +21,25 @@ const mustBeAuthorized = () => {
 
 export const appRoutes: Route[] = [
   {
-    path: '',
-    component: HomeComponent,
-    canActivate: [mustBeAuthorized],
-  },
-  {
     path: 'original',
     component: OriginalNavComponent,
   },
   {
     path: 'login',
     loadComponent: () => import('@sonnen/common').then(({LoginComponent}) => LoginComponent),
+  },
+  {
+    path: '',
+    component: HomeComponent,
+    canActivate: [mustBeAuthorized],
+    children: [
+      {
+        path: 'events',
+        loadChildren: () => import('@sonnen/events').then(m => m.EventsRoutes),
+      },
+
+    ],
+
   },
 
 ];

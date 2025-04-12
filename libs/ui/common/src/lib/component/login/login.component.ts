@@ -23,7 +23,7 @@ export class LoginComponent {
 
   constructor(private service: UserApiService, private router: Router) {
     const store = inject(UserStore);
-    effect(() => store.authorized() && this.router.navigate(['']));
+    effect(() => store.authorized() && this.router.navigate(['/events']));
     this.isUnauthorized = store.unauthorized;
     this.isAuthorizationKnown = computed(() => !isNullish(store.authorized()));
   }

@@ -1,1 +1,1 @@
-export * from './lib/events/events.component';
+export * from './lib/events/events.routes';
