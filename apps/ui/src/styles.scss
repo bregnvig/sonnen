@@ -7,17 +7,17 @@
 @tailwind components;
 @tailwind utilities;
 
+
 body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
   margin: 0;
   height: 100%;
-
   @include mat.theme(
       (
         color: (
           theme-type: light,
-          primary: mat.$cyan-palette,
-          tertiary: mat.$orange-palette,
+          primary: mat.$rose-palette,
+          tertiary: mat.$red-palette,
         ),
         typography: Roboto,
         density: 0,
@@ -27,4 +27,8 @@ body {
 
 html {
   height: 100%;
+
+  .mat-drawer-backdrop.mat-drawer-shown {
+    position: fixed;
+  }
 }

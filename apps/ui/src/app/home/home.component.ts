@@ -1,13 +1,13 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
-import { LoadingComponent } from '@sonnen/common';
+import { UserStore } from '@sonnen/api';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -16,17 +16,22 @@ import { map } from 'rxjs/operators';
   styleUrl: './home.component.scss',
   imports: [
     MatToolbarModule,
-    MatButtonModule,
+    MatButton,
     MatSidenavModule,
     MatListModule,
-    MatIconModule,
+    MatIcon,
     RouterOutlet,
-    LoadingComponent,
   ],
 })
 export class HomeComponent {
   #breakpointObserver = inject(BreakpointObserver);
+  user = inject(UserStore);
 
   isHandset = toSignal(this.#breakpointObserver.observe(Breakpoints.Handset)
     .pipe(map(result => result.matches)));
+
+  logout() {
+
+  }
+
 }

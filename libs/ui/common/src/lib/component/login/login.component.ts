@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, Signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { UserApiService, UserStore } from '@sonnen/api';
 import { isNullish } from '@sonnen/utils';
@@ -12,7 +13,7 @@ import { LoadingComponent } from '../loading/loading.component';
   imports: [
     MatButtonModule,
     LoadingComponent,
-
+    MatIconModule,
   ],
 })
 export class LoginComponent {
