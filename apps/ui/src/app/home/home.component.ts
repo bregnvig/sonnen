@@ -1,12 +1,12 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { UserStore } from '@sonnen/api';
 import { map } from 'rxjs/operators';
 
@@ -16,12 +16,12 @@ import { map } from 'rxjs/operators';
   styleUrl: './home.component.scss',
   imports: [
     MatToolbarModule,
-    MatButton,
     MatIconButton,
     MatSidenavModule,
     MatListModule,
     MatIcon,
     RouterOutlet,
+    RouterLink,
   ],
 })
 export class HomeComponent {

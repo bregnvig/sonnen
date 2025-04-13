@@ -30,29 +30,33 @@ export class UserApiService {
         map(() => undefined),
       ),
     );
-    getRedirectResult(this.auth).then(result => {
-      if (result && result.user) {
-        this.updateBaseInformation(result.user).then(() => console.log('Base information updated'));
-      }
-    });
-    onAuthStateChanged(this.auth, async firestoreUser => {
-      this.currentUser$.next(firestoreUser ? ({...firestoreUser}) : null);
-      if (firestoreUser) {
-        await this.updateBaseInformation(firestoreUser).then(() => isDevMode() && console.log('Base information updated'));
-        await fcm.setupMessaging().then(
-          async token => {
-            const user = await firstValueFrom(this.user$);
-            if (token && user && !user.tokens?.includes(token)) {
-              await firstValueFrom(this.updatePlayer({tokens: [token]})).then(
-                () => console.log('Token added', token),
-              );
-            }
-          },
-          error => Notification.permission !== 'denied' && console.error('Unable to setup messaging', error),
-        );
-      }
-      isDevMode() && console.log(firestoreUser);
-    });
+    getRedirectResult(this.auth)
+      .then(result => {
+        if (result && result.user) {
+          this.updateBaseInformation(result.user).then(() => console.log('Base information updated'));
+        }
+      })
+      .catch(error => console.log(error))
+      .finally(() => {
+        onAuthStateChanged(this.auth, async firestoreUser => {
+          this.currentUser$.next(firestoreUser ? ({...firestoreUser}) : null);
+          if (firestoreUser) {
+            await this.updateBaseInformation(firestoreUser).then(() => isDevMode() && console.log('Base information updated'));
+            await fcm.setupMessaging().then(
+              async token => {
+                const user = await firstValueFrom(this.user$);
+                if (token && user && !user.tokens?.includes(token)) {
+                  await firstValueFrom(this.updatePlayer({tokens: [token]})).then(
+                    () => console.log('Token added', token),
+                  );
+                }
+              },
+              error => Notification.permission !== 'denied' && console.error('Unable to setup messaging', error),
+            );
+          }
+          isDevMode() && console.log(firestoreUser);
+        });
+      });
   }
 
 

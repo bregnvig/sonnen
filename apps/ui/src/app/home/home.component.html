@@ -5,10 +5,15 @@
                position="end">
     <mat-toolbar>{{ user.user()?.displayName }}</mat-toolbar>
     <mat-nav-list>
-      <div class="p-2 flex flex-col items-stretch gap-2">
-        <button mat-button (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          Log af
+      <div class="p-2">
+
+        <a mat-list-item routerLink="/events">
+          <mat-icon matListItemIcon>event</mat-icon>
+          <h4 matListItemTitle>Hændelser</h4>
+        </a>
+        <button mat-list-item (click)="logout()">
+          <mat-icon matListItemIcon>logout</mat-icon>
+          <h4 matListItemTitle>Log af</h4>
         </button>
       </div>
     </mat-nav-list>
