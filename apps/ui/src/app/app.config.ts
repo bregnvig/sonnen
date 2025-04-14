@@ -1,5 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
-import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideExperimentalZonelessChangeDetection, isDevMode } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { connectAuthEmulator, getAuth } from '@angular/fire/auth';
 import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
@@ -8,6 +8,7 @@ import { getMessaging, provideMessaging } from '@angular/fire/messaging';
 import { provideRouter } from '@angular/router';
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,5 +36,9 @@ export const appConfig: ApplicationConfig = {
       return functions;
     }),
     provideMessaging(() => getMessaging()),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };

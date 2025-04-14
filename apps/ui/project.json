@@ -15,8 +15,7 @@
         "outputPath": "dist/apps/ui",
         "index": "apps/ui/src/index.html",
         "browser": "apps/ui/src/main.ts",
-        "polyfills": [
-        ],
+        "polyfills": [],
         "tsConfig": "apps/ui/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -26,6 +25,7 @@
           }
         ],
         "styles": [
+          "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
           "apps/ui/src/styles.scss"
         ],
         "scripts": []
@@ -44,7 +44,8 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "serviceWorker": "apps/ui/ngsw-config.json"
         },
         "development": {
           "optimization": false,
