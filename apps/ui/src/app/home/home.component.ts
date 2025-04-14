@@ -6,8 +6,9 @@ import { MatIcon } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { UserStore } from '@sonnen/api';
+import { SidebarComponent } from '@sonnen/common';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -21,12 +22,12 @@ import { map } from 'rxjs/operators';
     MatListModule,
     MatIcon,
     RouterOutlet,
-    RouterLink,
+    SidebarComponent,
   ],
 })
 export class HomeComponent {
   #breakpointObserver = inject(BreakpointObserver);
-  user = inject(UserStore);
+  user = inject(UserStore).user;
 
   isHandset = toSignal(this.#breakpointObserver.observe(Breakpoints.Handset)
     .pipe(map(result => result.matches)));

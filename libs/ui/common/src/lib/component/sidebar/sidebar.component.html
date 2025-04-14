@@ -1,0 +1,10 @@
+<mat-toolbar color="primary">
+  <img class="avatar" height="40" width="40" [ngSrc]="user()?.photoURL ?? 'assets/loading/red.svg'" alt="Profil billede">{{ user()?.displayName ?? 'Velkommen' }}
+</mat-toolbar>
+<mat-action-list style="padding: 1rem 1rem 0 1rem">
+  @if (user()) {
+    <common-sidenav-button icon="logout" [routerLink]="['logout']" (click)="closing.emit()">Log ud</common-sidenav-button>
+  } @else {
+    <common-sidenav-button icon="login" [routerLink]="['login']" (click)="closing.emit()">Log ind</common-sidenav-button>
+  }
+</mat-action-list>
