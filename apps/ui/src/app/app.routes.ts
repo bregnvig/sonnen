@@ -14,7 +14,7 @@ const mustBeAuthorized = () => {
 
   return toObservable(store.unauthorized).pipe(
     filter(unauthorized => !isNullish(unauthorized)),
-    map(unauthorized => unauthorized ? router.navigate(['login']).then(() => false) : true),
+    map(unauthorized => unauthorized ? router.navigate(['splash']).then(() => false) : true),
   );
 
 };
@@ -27,6 +27,10 @@ export const appRoutes: Route[] = [
   {
     path: 'login',
     loadComponent: () => import('@sonnen/common').then(({LoginComponent}) => LoginComponent),
+  },
+  {
+    path: 'splash',
+    loadComponent: () => import('./splash.component').then(({SplashComponent}) => SplashComponent),
   },
   {
     path: '',
