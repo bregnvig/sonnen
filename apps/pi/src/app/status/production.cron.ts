@@ -28,7 +28,7 @@ export class ProductionCronService {
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async productionMoreThanConsuming() {
+  async surplusProduction() {
     const status = await firstValueFrom(this.service.status$);
     const isProductionMoreThanConsuming = status.productionW > status.consumptionAvg;
 
@@ -40,7 +40,7 @@ export class ProductionCronService {
       const message = `Produktionen er nu højere end forbruget. Du bruger ${status.consumptionAvg}W men du producerer ${status.productionW}W`;
       await this.eventService.add({
         type: 'info',
-        source: `${ProductionCronService.name}:ProductionMoreThanConsuming`,
+        source: `${ProductionCronService.name}:SurplusProduction`,
         message,
       });
       const tokes = users.flatMap(u => u.tokens);
