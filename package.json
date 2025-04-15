@@ -2,7 +2,9 @@
   "name": "@sonnen/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "deploy:hosting": "nx build ui --prod && firebase deploy --only hosting"
+  },
   "private": true,
   "dependencies": {
     "@angular/cdk": "^19.2.8",
