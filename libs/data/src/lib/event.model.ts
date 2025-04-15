@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import Timestamp = firestore.Timestamp;
 
 export interface SonnenEvent<T = DateTime | Timestamp> {
-  timestamp: T;
+  timestamp?: T;
   source: `${string}:${string}`;
   type: 'warn' | 'error' | 'info' | 'debug';
   message: string;

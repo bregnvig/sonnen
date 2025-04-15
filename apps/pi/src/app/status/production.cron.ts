@@ -4,7 +4,7 @@ import { collectionPath, User } from '@sonnen/data';
 import { firestore } from 'firebase-admin';
 import { DateTime } from 'luxon';
 import { firstValueFrom } from 'rxjs';
-import { SonnenService } from '../common';
+import { EventService, SonnenService } from '../common';
 import { FirebaseService } from '../firebase';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class ProductionCronService {
   readonly #logger = new Logger(ProductionCronService.name);
   latestNotification: DateTime | null = null;
 
-  constructor(private service: SonnenService, private firebase: FirebaseService) {
+  constructor(private service: SonnenService, private firebase: FirebaseService, private eventService: EventService) {
     this.#logger.debug('ProductionCronService started');
   }
 
@@ -37,10 +37,16 @@ export class ProductionCronService {
       const users = await this.firebase.db.collection(collectionPath.users).where('tokens.0', '!=', null).get().then(
         value => value.docs.map(d => d.data() as User),
       );
+      const message = `Produktionen er nu højere end forbruget. Du bruger ${status.consumptionAvg}W men du producerer ${status.productionW}W`;
+      await this.eventService.add({
+        type: 'info',
+        source: `${ProductionCronService.name}:ProductionMoreThanConsuming`,
+        message,
+      });
       const tokes = users.flatMap(u => u.tokens);
       while (tokes.length > 0) {
         const token = tokes.pop();
-        await this.firebase.sendToToken(token, 'Plus på solen', `Produktionen er nu højere end forbruget. Du bruger ${status.consumptionAvg}W men du producerer ${status.productionW}W`);
+        await this.firebase.sendToToken(token, 'Plus på solen', message);
       }
     }
   }

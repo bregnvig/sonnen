@@ -33,7 +33,6 @@ export class SimpleBatteryCheckService {
         const success = await firstValueFrom(this.service.charge().pipe(
           map(() => true),
           catchError(async error => event.add({
-              timestamp: firestore.Timestamp.now(),
               source: `${SimpleBatteryCheckService.name}:ChargeError`,
               type: 'error',
               message: error.message,
@@ -45,7 +44,6 @@ export class SimpleBatteryCheckService {
           const usoc = (await firstValueFrom(this.service.getLatestData())).usoc;
           await event.add({
             message: `Battery charge timeout. Stop charging`,
-            timestamp: firestore.Timestamp.now(),
             source: `${SimpleBatteryCheckService.name}:ChargeStatus`,
             type: 'info',
             data: {
