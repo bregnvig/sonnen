@@ -1,7 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
-import { OperationMode } from '@sonnen/data';
-import { map, switchMap } from 'rxjs';
+import { OperationMode, Status } from '@sonnen/data';
+import { shareLatest } from '@sonnen/utils';
+import { map, Observable, switchMap, timer } from 'rxjs';
 import { SonnenConfiguration } from './sonnen-configuration.model';
 import { SonnenLatestData } from './sonnen-latest-data.model';
 import { sonnenMapper } from './sonnen-mapper';
@@ -11,6 +12,11 @@ import { SonnenStatus } from './sonnen-status.model';
 export class SonnenService {
 
   #logger = new Logger(SonnenService.name);
+
+  readonly status$: Observable<Status> = timer(0, 60000).pipe(
+    switchMap(() => this.#getStatus()),
+    shareLatest(),
+  );
 
   constructor(private http: HttpService) {
   }
@@ -26,13 +32,6 @@ export class SonnenService {
     return this.http.get<SonnenLatestData>('latestdata').pipe(
       map(response => response.data),
       map(response => sonnenMapper.latestData(response)),
-    );
-  }
-
-  getStatus() {
-    return this.http.get<SonnenStatus>('status').pipe(
-      map(response => response.data),
-      map(response => sonnenMapper.status(response)),
     );
   }
 
@@ -88,4 +87,12 @@ export class SonnenService {
       map(response => sonnenMapper.configuration(response)),
     );
   }
+
+  #getStatus() {
+    return this.http.get<SonnenStatus>('status').pipe(
+      map(response => response.data),
+      map(response => sonnenMapper.status(response)),
+    );
+  }
+
 }

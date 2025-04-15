@@ -1,6 +1,6 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { FirestoreModule } from '../firestore';
+import { FirebaseModule } from '../firebase';
 import { EventService, SonnenService } from './';
 
 @Module({
@@ -11,7 +11,7 @@ import { EventService, SonnenService } from './';
         'Auth-Token': process.env.SONNEN_API_KEY,
       },
     }),
-    FirestoreModule,
+    FirebaseModule,
   ],
   providers: [SonnenService, EventService],
   exports: [SonnenService, EventService],

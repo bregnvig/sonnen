@@ -5,5 +5,7 @@ export const documentPath = {
 
 export const collectionPath = {
   averageConsumption: 'average-consumption',
+  production: 'production',
   events: 'events',
+  users: 'users',
 };

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CommonModule } from '../common';
-import { FirestoreModule } from '../firestore';
-import { StatusCronService } from './status.cron';
+import { FirebaseModule } from '../firebase';
+import { ConsumptionCronService } from './consumption.cron';
 
 @Module({
-  imports: [CommonModule, FirestoreModule],
-  providers: [StatusCronService],
+  imports: [CommonModule, FirebaseModule],
+  providers: [ConsumptionCronService],
 })
 export class StatusModule {}

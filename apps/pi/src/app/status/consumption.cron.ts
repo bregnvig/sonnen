@@ -5,22 +5,22 @@ import { firestore } from 'firebase-admin';
 import { DateTime } from 'luxon';
 import { firstValueFrom } from 'rxjs';
 import { SonnenService } from '../common';
-import { FirestoreService } from '../firestore';
+import { FirebaseService } from '../firebase';
 
 @Injectable()
-export class StatusCronService {
+export class ConsumptionCronService {
 
-  readonly #logger = new Logger(StatusCronService.name);
+  readonly #logger = new Logger(ConsumptionCronService.name);
 
-  constructor(private service: SonnenService, private firestore: FirestoreService) {
-    this.#logger.debug('StatusCronService started');
+  constructor(private service: SonnenService, private firestore: FirebaseService) {
+    this.#logger.debug('ConsumptionCronService started');
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async handleStatus() {
-    const status = await firstValueFrom(this.service.getStatus());
+  async reportConsumption() {
+    const status = await firstValueFrom(this.service.status$);
     const collection = this.firestore.db.collection(collectionPath.averageConsumption);
-    const document = await collection.doc(DateTime.now().toFormat('yyyy-MM-dd'));
+    const document = collection.doc(DateTime.now().toFormat('yyyy-MM-dd'));
     await document.set({
       consumption: firestore.FieldValue.arrayUnion({consumption: status.consumptionAvg, timestamp: firestore.Timestamp.now()}),
     }, {merge: true});

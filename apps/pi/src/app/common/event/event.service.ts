@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { SonnenEvent } from '@sonnen/data';
-import { FirestoreService } from '../../firestore';
+import { FirebaseService } from '../../firebase';
 
 
 @Injectable()
 export class EventService {
 
-  constructor(private firestore: FirestoreService) {}
+  constructor(private firebase: FirebaseService) {}
 
   async add(event: SonnenEvent) {
-    return this.firestore.db.collection('events').add(event);
+    return this.firebase.db.collection('events').add(event);
   }
 }
