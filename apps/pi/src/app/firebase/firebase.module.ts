@@ -1,18 +1,18 @@
 import { Logger, Module, OnModuleInit } from '@nestjs/common';
-import { FirestoreService } from './firestore.service';
+import { FirebaseService } from './firebase.service';
 
 @Module({
   providers: [
-    FirestoreService,
+    FirebaseService,
   ],
   exports: [
-    FirestoreService,
+    FirebaseService,
   ],
 })
-export class FirestoreModule implements OnModuleInit {
-  readonly #logger = new Logger(FirestoreModule.name);
+export class FirebaseModule implements OnModuleInit {
+  readonly #logger = new Logger(FirebaseModule.name);
 
-  constructor(private service: FirestoreService) {
+  constructor(private service: FirebaseService) {
   }
 
   async onModuleInit() {
