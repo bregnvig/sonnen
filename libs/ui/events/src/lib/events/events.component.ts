@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { EventApiService } from '@sonnen/api';
@@ -20,7 +20,12 @@ import { CardPageComponent } from '@sonnen/common';
           <mat-card-content>
             <div class="flex flex-col gap-2">
               <p>{{ event.message }}</p>
-              <small class="text-tiny">{{ +event.timestamp | date: 'short' }}</small>
+              @if (data()[$index]; as data) {
+                <pre>
+                  <code>{{ data }}</code>
+                </pre>
+              }
+              <small class="text-tiny">{{ +(event.timestamp ?? 0) | date: 'short' }}</small>
             </div>
           </mat-card-content>
         </mat-card>
@@ -32,4 +37,11 @@ import { CardPageComponent } from '@sonnen/common';
 })
 export class EventsComponent {
   events = toSignal(inject(EventApiService).events$);
+  data = computed(() => {
+    const events = this.events();
+    if (events?.length) {
+      return events.map(event => event.data ? JSON.stringify(event.data, null, 2) : null);
+    }
+    return [];
+  });
 }
