@@ -25,10 +25,10 @@ export class FCMService {
             const isAlreadyGranted = Notification.permission === 'granted';
             (isAlreadyGranted
                 ? Promise.resolve()
-                : firstValueFrom(this.snackBar.open('Hvis du vil modtage påmindelse, løbsresultater etc, så skal du godkende at vi må sende notifikationer til dig 👍', 'OK').onAction())
+                : firstValueFrom(this.snackBar.open('Hvis du vil notifikation skal du trykke OK', 'OK').onAction())
             ).then(
               async () => {
-                await navigator.serviceWorker.register('/assets/firebase-messaging-sw.js', {
+                await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
                   type: 'module',
                 }).then(serviceWorkerRegistration => getToken(messaging, {
                   serviceWorkerRegistration,
