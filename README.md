@@ -1,5 +1,11 @@
 # Sonnen
 
+## UI
+
+The UI is built with Angular and uses the [Angular Material](https://material.angular.io/) library for components.
+
+Run using `npx nx serve ui`
+
 ## Raspberry Pi installation
 
 Clone into the repository and run the following commands
@@ -58,16 +64,14 @@ sudo touch /var/log/sonnen.log /var/log/sonnen-error.log
 sudo chown pi:pi /var/log/sonnen*.log
 ```
 
-## Development with firestore
+## Development with firestore 
 
-Use environment to decide which firestore database to populate.
-
-If you need to populate the firebase emulator use `export FIRESTORE_EMULATOR_HOST="localhost:8080"`. Remember to start the emulator before executing the builder.
+Use `export FIRESTORE_EMULATOR_HOST="localhost:8080"` to make Pi project write to emulator. Remember to start the emulator before executing the builder.
 
 ### Starting emulators
 
 1. Run emulators
-   use `firebase emulators:start --only=functions,firestore,auth,pubsub --config=firebase.json --export-on-exit=./saved-data --import=./saved-data --inspect-functions`
+   use `firebase emulators:start --only=functions,firestore,auth,pubsub --config=firebase.json --export-on-exit=./saved-data --import=./saved-data --inspect-functions --project sonnen-phony`
    Delete `export`, `import` and/or `--inspect-functions` if not wanted
-   2If ports are already taken, run `npm run kill-ports`
+   If ports are already taken, run `npm run kill-ports`
 
