@@ -24,7 +24,5 @@ export class ConsumptionCronService {
     await document.set({
       consumption: firestore.FieldValue.arrayUnion({consumption: status.consumptionAvg, timestamp: firestore.Timestamp.now()}),
     }, {merge: true});
-
-    this.#logger.log(`Average consumption ${status.consumptionAvg}W`);
   }
 }
