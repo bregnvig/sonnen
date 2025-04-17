@@ -10,6 +10,7 @@ export class BatteryCronService {
 
   #eventAt?: DateTime;
   minUSOC = 100;
+  minTimestamp?: DateTime;
 
   constructor(private eventService: EventService, private service: SonnenService, private firebase: FirebaseService) {
     this.#logger.debug('BatteryCronService started');
@@ -21,15 +22,23 @@ export class BatteryCronService {
       map(({usoc}) => usoc),
     ));
     await this.firebase.writeDayData('battery', {usoc});
-    this.minUSOC = Math.min(this.minUSOC, usoc);
+    if (this.minUSOC > usoc) {
+      this.minUSOC = usoc;
+      this.minTimestamp = DateTime.now();
+    }
     const now = DateTime.now();
     if (now.hour === 10 && this.#eventAt.day < now.day) {
       this.#eventAt = now;
-      const message = `Minimum batteri niveau var ${this.minUSOC}%`;
+      const message = `Minimum batteri niveau var ${this.minUSOC}% kl. ${this.minTimestamp?.toFormat('HH:mm')}`;
       await this.eventService.add({
         type: 'info',
         source: `${BatteryCronService.name}:MinimumBatteryLevel`,
         message,
+        data: {
+          usoc,
+          minUSOC: this.minUSOC,
+          minTimestamp: this.minTimestamp?.toFormat('HH:mm'),
+        },
       });
       await this.firebase.sendToUsers('Minimum batteri', message);
 
