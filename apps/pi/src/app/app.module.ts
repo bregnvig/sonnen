@@ -7,7 +7,7 @@ import { of, switchMap } from 'rxjs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule, EventService, SonnenService } from './common';
-import { SimpleBatteryCheckModule } from './simple-battery-check';
+import { SimpleBatteryChargeModule } from './simple-battery-charge';
 import { StatusModule } from './status';
 
 @Module({
@@ -15,7 +15,7 @@ import { StatusModule } from './status';
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     CommonModule,
-    SimpleBatteryCheckModule,
+    SimpleBatteryChargeModule,
     StatusModule,
   ],
   controllers: [AppController],
