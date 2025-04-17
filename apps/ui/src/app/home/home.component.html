@@ -3,11 +3,11 @@
                [attr.role]="isHandset() ? 'dialog' : 'navigation'"
                mode="over"
                position="end">
-    <common-sidebar/>
+    <common-sidebar (closing)="drawer.close()"/>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar class="d-flex flex-row justify-between">
-      <span>Min sol🌻</span>
+      <span routerLink="/">Min sol🌻</span>
       <button
         type="button"
         aria-label="Toggle sidenav"

@@ -6,7 +6,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { UserStore } from '@sonnen/api';
 import { SidebarComponent } from '@sonnen/common';
 import { map } from 'rxjs/operators';
@@ -23,6 +23,7 @@ import { map } from 'rxjs/operators';
     MatIcon,
     RouterOutlet,
     SidebarComponent,
+    RouterLink,
   ],
 })
 export class HomeComponent {

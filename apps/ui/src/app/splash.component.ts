@@ -5,7 +5,7 @@ import { UserApiService, UserStore } from '@sonnen/api';
 @Component({
   selector: 'app-splash.flex-auto',
   template: `
-    <div class="w-full h-screen flex flex-col items-center justify-center" (click)="login()">
+    <div class="w-full h-screen flex flex-col items-center justify-center" tabindex="0" (keydown)="login()" (click)="login()">
       <img src="splash.png" alt="splash" class="object-cover">
     </div>
   `,

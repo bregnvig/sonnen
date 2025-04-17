@@ -38,6 +38,10 @@ export const appRoutes: Route[] = [
     canActivate: [mustBeAuthorized],
     children: [
       {
+        path: '',
+        loadComponent: () => import('./splash.component').then(({SplashComponent}) => SplashComponent),
+      },
+      {
         path: 'events',
         loadChildren: () => import('@sonnen/events').then(m => m.EventsRoutes),
       },
