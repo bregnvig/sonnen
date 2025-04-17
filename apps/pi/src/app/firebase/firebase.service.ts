@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { collectionPath, User } from '@sonnen/data';
 import * as admin from 'firebase-admin';
+import { firestore } from 'firebase-admin';
+import { DateTime } from 'luxon';
 import { readFile } from 'node:fs/promises';
 
 @Injectable()
@@ -30,7 +33,29 @@ export class FirebaseService {
     return this.#db;
   }
 
+  async writeDayData<T>(collection: string, data: T) {
+    const collectionRef = this.db.collection(collection);
+    const document = collectionRef.doc(DateTime.now().toFormat('yyyy-MM-dd'));
+    await document.set({
+      [collection]: firestore.FieldValue.arrayUnion({...data, timestamp: firestore.Timestamp.now()}),
+    }, {merge: true});
+
+  }
+
+  async sendToUsers(title: string, message: string) {
+    const users = await this.db.collection(collectionPath.users).where('tokens.0', '!=', null).get().then(
+      value => value.docs.map(d => d.data() as User),
+    );
+    const tokes = users.flatMap(u => u.tokens);
+    while (tokes.length > 0) {
+      const token = tokes.pop();
+      await this.sendToToken(token, title, message);
+    }
+
+  }
+
   async sendToToken(token: string, title: string, body: string) {
+
     return this.#app.messaging().send({
       token,
       notification: {

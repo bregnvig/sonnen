@@ -8,11 +8,11 @@ import { catchError, firstValueFrom, map } from 'rxjs';
 import { EventService, SonnenService } from '../common';
 
 @Injectable()
-export class SimpleBatteryCheckService {
-  readonly #logger = new Logger(SimpleBatteryCheckService.name);
+export class SimpleBatteryChargeService {
+  readonly #logger = new Logger(SimpleBatteryChargeService.name);
 
   constructor(private service: SonnenService, event: EventService, private schedulerRegistry: SchedulerRegistry) {
-    this.#logger.debug('SimpleBatteryCheckService', process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_TIME);
+    this.#logger.debug('SimpleBatteryChargeService', process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_TIME);
     const maxChargeTime = (parseInt(process.env.SONNEN_BATTERY_CHARGE_TIME) || 30);
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(this.service.getLatestData());
@@ -22,7 +22,7 @@ export class SimpleBatteryCheckService {
         await event.add({
           message: `Battery low. Charge battery for ${minuttes} minutes`,
           timestamp: firestore.Timestamp.now(),
-          source: `${SimpleBatteryCheckService.name}:ChargeStatus`,
+          source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -33,7 +33,7 @@ export class SimpleBatteryCheckService {
         const success = await firstValueFrom(this.service.charge().pipe(
           map(() => true),
           catchError(async error => event.add({
-              source: `${SimpleBatteryCheckService.name}:ChargeError`,
+              source: `${SimpleBatteryChargeService.name}:ChargeError`,
               type: 'error',
               message: error.message,
             }).then(() => this.service.automaticMode().pipe(map(() => false))),
@@ -44,7 +44,7 @@ export class SimpleBatteryCheckService {
           const usoc = (await firstValueFrom(this.service.getLatestData())).usoc;
           await event.add({
             message: `Battery charge timeout. Stop charging`,
-            source: `${SimpleBatteryCheckService.name}:ChargeStatus`,
+            source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
             type: 'info',
             data: {
               usoc,
@@ -62,7 +62,7 @@ export class SimpleBatteryCheckService {
         await event.add({
           message: `Sufficient battery level`,
           timestamp: firestore.Timestamp.now(),
-          source: `${SimpleBatteryCheckService.name}:ChargeStatus`,
+          source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,

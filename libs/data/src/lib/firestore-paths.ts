@@ -6,6 +6,7 @@ export const documentPath = {
 export const collectionPath = {
   averageConsumption: 'average-consumption',
   production: 'production',
+  battery: 'battery',
   events: 'events',
   users: 'users',
-};
+} as const;

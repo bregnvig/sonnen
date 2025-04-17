@@ -19,6 +19,7 @@ export class ConsumptionCronService {
   @Cron(CronExpression.EVERY_MINUTE)
   async reportConsumption() {
     const status = await firstValueFrom(this.service.status$);
+    await this.firestore.writeDayData(collectionPath.averageConsumption, {consumption: status.consumptionAvg});
     const collection = this.firestore.db.collection(collectionPath.averageConsumption);
     const document = collection.doc(DateTime.now().toFormat('yyyy-MM-dd'));
     await document.set({
