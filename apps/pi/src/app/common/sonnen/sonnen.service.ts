@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { OperationMode, Status } from '@sonnen/data';
 import { shareLatest } from '@sonnen/utils';
-import { map, Observable, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, switchMap, timer } from 'rxjs';
 import { SonnenConfiguration } from './sonnen-configuration.model';
 import { SonnenLatestData } from './sonnen-latest-data.model';
 import { sonnenMapper } from './sonnen-mapper';
@@ -12,6 +12,8 @@ import { SonnenStatus } from './sonnen-status.model';
 export class SonnenService {
 
   #logger = new Logger(SonnenService.name);
+
+  chargeStatus = new BehaviorSubject<boolean>(false);
 
   readonly status$: Observable<Status> = timer(0, 60000).pipe(
     switchMap(() => this.#getStatus()),
@@ -35,14 +37,20 @@ export class SonnenService {
     );
   }
 
-  charge(watts = 2000) {
+  charge(watts = 2300) {
+    this.chargeStatus.next(true);
     return this.manualMode().pipe(
       switchMap(() => this.http.post<boolean>(`setpoint/charge/${watts}`)),
       map(response => response.data),
+      catchError(error => {
+        this.chargeStatus.next(false);
+        throw error;
+      }),
     );
   }
 
   stop() {
+    this.chargeStatus.next(false);
     return this.automaticMode();
   }
 
