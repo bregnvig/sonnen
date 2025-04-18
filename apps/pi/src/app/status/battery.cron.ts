@@ -1,10 +1,11 @@
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { DateTime } from 'luxon';
 import { firstValueFrom, map } from 'rxjs';
 import { EventService, SonnenService } from '../common';
 import { FirebaseService } from '../firebase';
 
+@Injectable()
 export class BatteryCronService {
   readonly #logger = new Logger(BatteryCronService.name);
 
