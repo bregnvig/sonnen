@@ -15,7 +15,7 @@ export class AppController {
   }
 
   @Get('notification')
-  sendTestNotification(@Query('message') message: string, @Query() _token: string, @Query('badge') badge?: string, @Query('icon') icon?: string) {
+  sendTestNotification(@Query('message') message: string, @Query('token') _token: string, @Query('badge') badge?: string, @Query('icon') icon?: string) {
     const token = requiredValue(_token, 'Token');
     this.#logger.debug('Sending test notification', message);
     return this.firebase.sendToToken(token, 'Test notification', message, badge, icon).then(() => {

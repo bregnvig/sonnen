@@ -9,7 +9,6 @@ import { FirebaseService } from '../firebase';
 export class BatteryCronService {
   readonly #logger = new Logger(BatteryCronService.name);
 
-  #eventAt?: DateTime;
   minUSOC = 100;
   minTimestamp?: DateTime;
 
@@ -27,22 +26,24 @@ export class BatteryCronService {
       this.minUSOC = usoc;
       this.minTimestamp = DateTime.now();
     }
-    const now = DateTime.now();
-    if (now.hour === 10 && this.#eventAt.day < now.day) {
-      this.#eventAt = now;
-      const message = `Minimum batteri niveau var ${this.minUSOC}% kl. ${this.minTimestamp?.toFormat('HH:mm')}`;
-      await this.eventService.add({
-        type: 'info',
-        source: `${BatteryCronService.name}:MinimumBatteryLevel`,
-        message,
-        data: {
-          usoc,
-          minUSOC: this.minUSOC,
-          minTimestamp: this.minTimestamp?.toFormat('HH:mm'),
-        },
-      });
-      await this.firebase.sendToUsers('Minimum batteri', message);
+  }
 
-    }
+  @Cron('0 10 * * *')
+  async reportMinimumBatteryLevel() {
+    const usoc = await firstValueFrom(this.service.status$.pipe(
+      map(({usoc}) => usoc),
+    ));
+    const message = `Minimum batteri niveau var ${this.minUSOC}% kl. ${this.minTimestamp?.toFormat('HH:mm')}`;
+    await this.eventService.add({
+      type: 'info',
+      source: `${BatteryCronService.name}:MinimumBatteryLevel`,
+      message,
+      data: {
+        usoc,
+        minUSOC: this.minUSOC,
+        minTimestamp: this.minTimestamp?.toFormat('HH:mm'),
+      },
+    });
+    await this.firebase.sendToUsers('Minimum batteri', message);
   }
 }

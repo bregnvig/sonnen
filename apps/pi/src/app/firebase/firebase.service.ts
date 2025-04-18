@@ -55,7 +55,7 @@ export class FirebaseService {
 
   }
 
-  async sendToToken(token: string, title: string, body: string, badge = 'https://sonnen.bregnvig.dk/icons/icon-192x192.png', icon = 'https://sonnen.bregnvig.dk/icons/icon-192x192.png') {
+  async sendToToken(token: string, title: string, body: string, badge = 'https://sonnen.bregnvig.dk/badge.v4.png', icon = 'https://sonnen.bregnvig.dk/icons/icon-192x192.png') {
 
     return this.#app.messaging().send({
       token,
