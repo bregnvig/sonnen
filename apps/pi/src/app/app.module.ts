@@ -7,6 +7,7 @@ import { of, switchMap } from 'rxjs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule, EventService, SonnenService } from './common';
+import { FirebaseModule } from './firebase';
 import { SimpleBatteryChargeModule } from './simple-battery-charge';
 import { StatusModule } from './status';
 
@@ -17,6 +18,7 @@ import { StatusModule } from './status';
     CommonModule,
     SimpleBatteryChargeModule,
     StatusModule,
+    FirebaseModule,
   ],
   controllers: [AppController],
   providers: [
