@@ -47,6 +47,7 @@ export class FirebaseService {
       value => value.docs.map(d => d.data() as User),
     );
     const tokes = users.flatMap(u => u.tokens);
+    this.#logger.debug(`Sending notification to ${tokes.length} users`);
     while (tokes.length > 0) {
       const token = tokes.pop();
       await this.sendToToken(token, title, message);
