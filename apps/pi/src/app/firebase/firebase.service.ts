@@ -43,10 +43,10 @@ export class FirebaseService {
   }
 
   async sendToUsers(title: string, message: string) {
-    const users = await this.db.collection(collectionPath.users).where('tokens.0', '!=', null).get().then(
+    const users = await this.db.collection(collectionPath.users).where('tokens', '!=', null).get().then(
       value => value.docs.map(d => d.data() as User),
     );
-    const tokes = users.flatMap(u => u.tokens);
+    const tokes = users.flatMap(u => u.tokens ?? []);
     this.#logger.debug(`Sending notification to ${tokes.length} users`);
     while (tokes.length > 0) {
       const token = tokes.pop();
