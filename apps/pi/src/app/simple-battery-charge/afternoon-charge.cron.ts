@@ -15,11 +15,14 @@ export class AfternoonChargeService {
     this.#logger.debug('AfternoonChargeService started');
   }
 
-  @Cron('0 15 * * *') // Runs every day at 15:00 (2 PM)
-  async handleCron() {
+  @Cron('0 15 * * *') // Runs every day at 15:00 (3 PM)
+  async afternoonChargeCheck() {
+
     const now = DateTime.now();
     const usoc = await firstValueFrom(this.sonnenService.usoc$);
     const price = (await firstValueFrom(this.costService.getPrices(now))).find(price => price.from.hasSame(now, 'hour'));
+
+    this.#logger.debug(`AfternoonChargeService: ${usoc}%, price: ${price?.kWh} kr/kWh`);
 
     const chargeTime = usoc < 75 ? 100 - usoc : 0;
 

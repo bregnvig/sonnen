@@ -29,7 +29,7 @@ export class CostService {
     const year = date.toFormat('yyyy');
     const month = date.toFormat('MM');
     const day = date.toFormat('dd');
-    return this.http.get<ElpriserligenuEntry[]>(`https://www.elprisenlignu.dk/api/v1/prices/${year}/${month}-${day}_${region}.json`).pipe(
+    return this.http.get<ElpriserligenuEntry[]>(`https://elprisenligenu.dk/api/v1/prices/${year}/${month}-${day}_${region}.json`).pipe(
       map(response => response.data),
       map(data => data.map(mapToCost)),
     );

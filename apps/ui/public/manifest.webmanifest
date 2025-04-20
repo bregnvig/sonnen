@@ -2,7 +2,7 @@
   "name": "Min sol",
   "short_name": "Min sol",
   "theme_color": "#FFC000",
-  "background_color": "#fafafa",
+  "background_color": "#FFC000",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
