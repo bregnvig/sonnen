@@ -36,7 +36,7 @@ export class AppModule implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit() {
     await this.event.add({
-      message: `Sonnen PI has started successfully`,
+      message: `Sonnen PI er startet`,
       timestamp: firestore.Timestamp.now(),
       source: `AppModule:Ready`,
       type: 'info',
@@ -47,7 +47,7 @@ export class AppModule implements OnModuleInit, OnModuleDestroy {
 
   async onModuleDestroy() {
     await this.event.add({
-      message: `Sonnen PI is shutting down`,
+      message: `Sonnen PI er lukket ned`,
       timestamp: firestore.Timestamp.now(),
       source: `AppModule:Destroy`,
       type: 'info',
