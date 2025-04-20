@@ -15,6 +15,6 @@ import { CostService } from './cost/cost.service';
     FirebaseModule,
   ],
   providers: [SonnenService, EventService, CostService],
-  exports: [SonnenService, EventService],
+  exports: [SonnenService, EventService, CostService],
 })
 export class CommonModule {}
