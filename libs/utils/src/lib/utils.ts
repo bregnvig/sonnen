@@ -1,4 +1,5 @@
 export type nullish = null | undefined;
+export const isRecord = <T = unknown>(value: unknown): value is Record<string, T> => !isNullish(value) && typeof value === 'object';
 export const isNullish = (value: unknown): value is nullish => value === null || value === undefined;
 export const unfreeze = <T>(value: T): T => {
   if (Array.isArray(value)) {

@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OperationMode, Status } from '@sonnen/data';
 import { shareLatest } from '@sonnen/utils';
 import { BehaviorSubject, catchError, map, Observable, switchMap, timer } from 'rxjs';
+import { EventService } from '../event';
 import { SonnenConfiguration } from './sonnen-configuration.model';
 import { SonnenLatestData } from './sonnen-latest-data.model';
 import { sonnenMapper } from './sonnen-mapper';
@@ -20,7 +21,11 @@ export class SonnenService {
     shareLatest(),
   );
 
-  constructor(private http: HttpService) {
+  readonly usoc$ = this.status$.pipe(
+    map(status => status.usoc),
+  );
+
+  constructor(private http: HttpService, private event: EventService) {
   }
 
   getBatteryData() {
@@ -42,9 +47,16 @@ export class SonnenService {
     return this.manualMode().pipe(
       switchMap(() => this.http.post<boolean>(`setpoint/charge/${watts}`)),
       map(response => response.data),
-      catchError(error => {
+      catchError(async error => {
         this.chargeStatus.next(false);
-        throw error;
+        await this.event.add({
+          source: `${SonnenService.name}:ChargeError`,
+          type: 'error',
+          message: error.message,
+        });
+        return this.automaticMode().pipe(
+          map(() => false),
+        );
       }),
     );
   }

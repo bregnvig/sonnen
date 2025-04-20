@@ -4,7 +4,7 @@ import { SonnenEvent } from '@sonnen/data';
 import { CronJob } from 'cron';
 import { firestore } from 'firebase-admin';
 import * as process from 'node:process';
-import { catchError, firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { EventService, SonnenService } from '../common';
 
 @Injectable()
@@ -32,12 +32,6 @@ export class SimpleBatteryChargeService {
 
         const success = await firstValueFrom(this.service.charge().pipe(
           map(() => true),
-          catchError(async error => event.add({
-              source: `${SimpleBatteryChargeService.name}:ChargeError`,
-              type: 'error',
-              message: error.message,
-            }).then(() => this.service.automaticMode().pipe(map(() => false))),
-          ),
         ));
         if (!success) return;
         const timeout = setTimeout(async () => {

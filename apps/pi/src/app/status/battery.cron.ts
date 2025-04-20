@@ -45,5 +45,7 @@ export class BatteryCronService {
       },
     });
     await this.firebase.sendToUsers('Minimum batteri', message);
+    this.minTimestamp = undefined;
+    this.minUSOC = 100;
   }
 }

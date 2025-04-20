@@ -8,7 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommonModule, EventService, SonnenService } from './common';
 import { FirebaseModule } from './firebase';
-import { SimpleBatteryChargeModule } from './simple-battery-charge';
+import { BatteryChargeModule } from './simple-battery-charge';
 import { StatusModule } from './status';
 
 @Module({
@@ -16,7 +16,7 @@ import { StatusModule } from './status';
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     CommonModule,
-    SimpleBatteryChargeModule,
+    BatteryChargeModule,
     StatusModule,
     FirebaseModule,
   ],

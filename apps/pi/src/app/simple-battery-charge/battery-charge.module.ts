@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CommonModule } from '../common';
+import { AfternoonChargeService } from './afternoon-charge.cron';
 import { SimpleBatteryChargeService } from './simple-battery-charge.cron';
 
 @Module({
   imports: [CommonModule],
-  providers: [SimpleBatteryChargeService],
+  providers: [SimpleBatteryChargeService, AfternoonChargeService],
 })
-export class SimpleBatteryChargeModule {}
+export class BatteryChargeModule {}

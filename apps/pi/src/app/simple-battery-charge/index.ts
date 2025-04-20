@@ -1,1 +1,1 @@
-export * from './simple-battery-charge.module';
+export * from './battery-charge.module';
