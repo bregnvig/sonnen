@@ -23,10 +23,11 @@ export class CostCronService {
       type: 'info',
       source: `${CostCronService.name}:CostInfo`,
       message: `Minimums pris ${minPrice.kWh} kr/kWh kl. ${minPrice.from.toFormat('HH:mm')} - Maximums pris ${maxPrice.kWh} kr/kWh kl. ${maxPrice.from.toFormat('HH:mm')}`,
-      data: [
+      data: {
         minPrice,
         maxPrice,
-      ],
+        day: cost.filter(c => c.from.hour >= 8 && c.from.hour <= 20),
+      },
     };
     await this.eventService.add(message);
     await this.eventService.sendToUsers('Dagens priser', message.message);
