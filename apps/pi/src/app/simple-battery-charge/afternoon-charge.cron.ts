@@ -2,8 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import { DateTime } from 'luxon';
 import { firstValueFrom } from 'rxjs';
-import { EventService, SonnenService } from '../common';
-import { CostService } from '../common/cost/cost.service';
+import { CostService, EventService, SonnenService } from '../common';
 import { FirebaseService } from '../firebase';
 
 @Injectable()
@@ -36,7 +35,7 @@ export class AfternoonChargeService {
       const stop = setTimeout(async () => {
         await firstValueFrom(this.sonnenService.stop());
       }, stopDelay);
-      await this.firebase.sendToUsers('Eftermiddagsopladning', `Batteriet er på ${usoc}%. Vil blive opladet i ${chargeTime} minutter`);
+      await this.eventService.sendToUsers('Eftermiddagsopladning', `Batteriet er på ${usoc}%. Vil blive opladet i ${chargeTime} minutter`);
       await this.eventService.add({
         type: 'info',
         source: `${AfternoonChargeService.name}:AfternoonCharge`,

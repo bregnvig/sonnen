@@ -44,7 +44,7 @@ export class BatteryCronService {
         minTimestamp: this.minTimestamp?.toFormat('HH:mm'),
       },
     });
-    await this.firebase.sendToUsers('Minimum batteri', message);
+    await this.eventService.sendToUsers('Minimum batteri', message);
     this.minTimestamp = undefined;
     this.minUSOC = 100;
   }

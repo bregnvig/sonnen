@@ -35,7 +35,7 @@ export class ProductionCronService {
         source: `${ProductionCronService.name}:SurplusProduction`,
         message,
       });
-      await this.firebase.sendToUsers('Plus på solen', message);
+      await this.eventService.sendToUsers('Plus på solen', message);
     }
   }
 }

@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { collectionPath, User } from '@sonnen/data';
 import * as admin from 'firebase-admin';
 import { firestore } from 'firebase-admin';
 import { DateTime } from 'luxon';
@@ -39,19 +38,6 @@ export class FirebaseService {
     await document.set({
       [collection]: firestore.FieldValue.arrayUnion({...data, timestamp: firestore.Timestamp.now()}),
     }, {merge: true});
-
-  }
-
-  async sendToUsers(title: string, message: string) {
-    const users = await this.db.collection(collectionPath.users).where('tokens', '!=', null).get().then(
-      value => value.docs.map(d => d.data() as User),
-    );
-    const tokes = users.flatMap(u => u.tokens ?? []);
-    this.#logger.debug(`Sending notification to ${tokes.length} users`);
-    while (tokes.length > 0) {
-      const token = tokes.pop();
-      await this.sendToToken(token, title, message);
-    }
 
   }
 
