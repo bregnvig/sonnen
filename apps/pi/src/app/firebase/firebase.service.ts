@@ -35,7 +35,10 @@ export class FirebaseService {
   async writeDayData<T>(collection: string, data: T) {
     const collectionRef = this.db.collection(collection);
     const document = collectionRef.doc(DateTime.now().toFormat('yyyy-MM-dd'));
+    const date = firestore.Timestamp.fromDate(DateTime.now().startOf('day').toJSDate());
+
     await document.set({
+      date,
       [collection]: firestore.FieldValue.arrayUnion({...data, timestamp: firestore.Timestamp.now()}),
     }, {merge: true});
 

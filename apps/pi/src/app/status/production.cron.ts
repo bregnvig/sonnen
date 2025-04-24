@@ -1,10 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { collectionPath } from '@sonnen/data';
 import { DateTime } from 'luxon';
 import { firstValueFrom } from 'rxjs';
-import { EventService, SonnenService } from '../common';
-import { FirebaseService } from '../firebase';
+import { EventService, SonnenCollectionService, SonnenService } from '../common';
 
 @Injectable()
 export class ProductionCronService {
@@ -12,14 +10,14 @@ export class ProductionCronService {
   readonly #logger = new Logger(ProductionCronService.name);
   latestNotification: DateTime | null = null;
 
-  constructor(private service: SonnenService, private firebase: FirebaseService, private eventService: EventService) {
+  constructor(private service: SonnenService, private collection: SonnenCollectionService, private eventService: EventService) {
     this.#logger.debug('ProductionCronService started');
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async production() {
     const status = await firstValueFrom(this.service.status$);
-    await this.firebase.writeDayData(collectionPath.production, {production: status.productionW});
+    await this.collection.updateProduction(status.productionW);
   }
 
   @Cron(CronExpression.EVERY_MINUTE)

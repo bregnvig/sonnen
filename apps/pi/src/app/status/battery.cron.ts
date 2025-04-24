@@ -2,8 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { DateTime } from 'luxon';
 import { firstValueFrom, map } from 'rxjs';
-import { EventService, SonnenService } from '../common';
-import { FirebaseService } from '../firebase';
+import { EventService, SonnenCollectionService, SonnenService } from '../common';
 
 @Injectable()
 export class BatteryCronService {
@@ -12,7 +11,7 @@ export class BatteryCronService {
   minUSOC = 100;
   minTimestamp?: DateTime;
 
-  constructor(private eventService: EventService, private service: SonnenService, private firebase: FirebaseService) {
+  constructor(private eventService: EventService, private service: SonnenService, private collection: SonnenCollectionService) {
     this.#logger.debug('BatteryCronService started');
   }
 
@@ -21,7 +20,7 @@ export class BatteryCronService {
     const usoc = await firstValueFrom(this.service.status$.pipe(
       map(({usoc}) => usoc),
     ));
-    await this.firebase.writeDayData('battery', {usoc});
+    await this.collection.updateBatteryLevel(usoc);
     if (this.minUSOC > usoc) {
       this.minUSOC = usoc;
       this.minTimestamp = DateTime.now();
