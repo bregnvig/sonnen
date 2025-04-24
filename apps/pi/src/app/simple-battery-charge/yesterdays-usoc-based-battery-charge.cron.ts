@@ -52,11 +52,11 @@ export class YesterdaysUSOCBasedBatteryChargeService {
           // await firstValueFrom(this.service.stop());
         }, minuttes * 60 * 1000);
         try {
-          this.schedulerRegistry.deleteTimeout(`battery-charge-stop`);
+          this.schedulerRegistry.deleteTimeout(`yesterdays-usoc-battery-charge-stop`);
         } catch {
           this.#logger.debug('No timeout to delete');
         }
-        this.schedulerRegistry.addTimeout(`battery-charge-stop`, timeout);
+        this.schedulerRegistry.addTimeout(`yesterdays-usoc-battery-charge-stop`, timeout);
       } else {
         await event.add({
           message: `Der er rigeligt med batteri`,
@@ -70,7 +70,7 @@ export class YesterdaysUSOCBasedBatteryChargeService {
         } as SonnenEvent);
       }
     });
-    schedulerRegistry.addCronJob('battery-check', job);
+    schedulerRegistry.addCronJob('yesterdays-usoc-battery-check', job);
     job.start();
   }
 
