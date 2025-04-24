@@ -8,6 +8,10 @@ import * as process from 'node:process';
 import { firstValueFrom } from 'rxjs';
 import { EventService, SonnenCollectionService, SonnenService } from '../common';
 
+/**
+ * This service is used to charge the battery based on the USOC level from yesterday.
+ * If the USOC was high when the production exceeded the consumption, it will charge the battery for a shorter time based on the USOC level.
+ */
 @Injectable()
 export class YesterdaysUSOCBasedBatteryChargeService {
   readonly #logger = new Logger(YesterdaysUSOCBasedBatteryChargeService.name);
