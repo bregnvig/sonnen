@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SonnenEvent } from '@sonnen/data';
+import { DateTime } from 'luxon';
 import { firstValueFrom } from 'rxjs';
-import { CostService, EventService } from '../common';
+import { Cost, CostService, EventService } from '../common';
 
 @Injectable()
 export class CostCronService {
@@ -14,19 +15,24 @@ export class CostCronService {
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async reportCost() {
-    const cost = await firstValueFrom(this.service.getPrices());
+    const now = DateTime.now();
+    const cost = (await firstValueFrom(this.service.getPrices())).filter(({from}) => from.hasSame(now, 'day'));
 
     const minPrice = cost.reduce((min, item) => !min || item.kWh <= min.kWh ? item : min, undefined);
     const maxPrice = cost.reduce((max, item) => !max || item.kWh >= max.kWh ? item : max, undefined);
 
+    const formatCost = (cost: Cost) => ({
+      kWh: cost.kWh,
+      from: cost.from.toFormat('HH:mm'),
+    });
     const message: SonnenEvent = {
       type: 'info',
       source: `${CostCronService.name}:CostInfo`,
       message: `Minimums pris ${minPrice.kWh} kr/kWh kl. ${minPrice.from.toFormat('HH:mm')} - Maximums pris ${maxPrice.kWh} kr/kWh kl. ${maxPrice.from.toFormat('HH:mm')}`,
       data: {
-        minPrice,
-        maxPrice,
-        day: cost.filter(c => c.from.hour >= 8 && c.from.hour <= 20),
+        minPrice: formatCost(minPrice),
+        maxPrice: formatCost(maxPrice),
+        day: cost.filter(c => c.from.hour >= 6 && c.from.hour <= 20).map(formatCost),
       },
     };
     await this.eventService.add(message);
