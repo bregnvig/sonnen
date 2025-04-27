@@ -5,6 +5,7 @@ module.exports = {
   output: {
     path: join(__dirname, '../../dist/apps/pi'),
   },
+  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'inline-source-map', // <-- HERE
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
