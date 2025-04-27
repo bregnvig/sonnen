@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { map, Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 
 import type { Cost } from './cost.model';
 
@@ -33,5 +33,26 @@ export class CostService {
       map(response => response.data),
       map(data => data.map(mapToCost)),
     );
+  }
+
+  async getsMoreExpensive(date: DateTime, periodInHours: number, region: 'DK2' | 'DK1' = 'DK2') {
+
+    const prices = await firstValueFrom(this.getPrices(date, region));
+    const currentPrice = prices.find(price => price.from.hasSame(date, 'hour'));
+
+    if (!currentPrice) {
+      return true;
+    }
+
+    let nextHour = date.plus({ hours: 1 });
+    while (periodInHours > 0) {
+      const nextPrice = prices.find(price => price.from.hasSame(nextHour, 'hour'));
+      if (nextPrice.kWh > currentPrice.kWh) {
+        return true;
+      }
+      periodInHours--;
+      nextHour = date.plus({ hours: 1 });
+    }
+    return false;
   }
 }

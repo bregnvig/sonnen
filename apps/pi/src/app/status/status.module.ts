@@ -8,6 +8,11 @@ import { ProductionCronService } from './production.cron';
 
 @Module({
   imports: [CommonModule, FirebaseModule],
-  providers: [ConsumptionCronService, ProductionCronService, BatteryCronService, CostCronService],
+  providers: [
+    ConsumptionCronService,
+    ProductionCronService,
+    BatteryCronService,
+    CostCronService
+  ],
 })
-export class StatusModule {}
+export class StatusModule { }

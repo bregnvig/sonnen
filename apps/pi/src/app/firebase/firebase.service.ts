@@ -20,9 +20,9 @@ export class FirebaseService {
     const credential = await readFile(process.env.SONNEN_FIREBASE_ADMIN_SDK, 'utf-8')
       .then(data => JSON.parse(data));
     this.#logger.debug(`Firestore project "${credential.project_id} has been read`);
-    this.#app = admin.initializeApp({credential: admin.credential.cert(credential)});
+    this.#app = admin.initializeApp({ credential: admin.credential.cert(credential) });
     this.#db = this.#app.firestore();
-    this.#logger.debug(`Firestore project "${credential.project_id} has been initialized`);
+    this.#logger.debug(`Firestore project "${credential.project_id}" has been initialized`);
   }
 
   get db() {
@@ -39,8 +39,8 @@ export class FirebaseService {
 
     await document.set({
       date,
-      [collection]: firestore.FieldValue.arrayUnion({...data, timestamp: firestore.Timestamp.now()}),
-    }, {merge: true});
+      [collection]: firestore.FieldValue.arrayUnion({ ...data, timestamp: firestore.Timestamp.now() }),
+    }, { merge: true });
 
   }
 
