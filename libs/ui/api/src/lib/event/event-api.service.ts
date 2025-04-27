@@ -16,7 +16,7 @@ export class EventApiService {
       query(
         collection(afs, collectionPath.events).withConverter<SonnenEvent>(converter.timestamp<SonnenEvent>()),
         orderBy('timestamp', 'desc'),
-        limit(10),
+        limit(20),
       ),
     );
   }
