@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Logger, ParseIntPipe, Query } from '@nestjs/common';
 import { requiredValue } from '@sonnen/utils';
 import { DateTime } from 'luxon';
 import { AppService } from './app.service';
@@ -23,7 +23,7 @@ export class AppController {
 
   @Get('notification')
   async sendTestNotification(@Query('message') message: string,
-    @Query('token') _token: string, @Query('badge') badge?: string, @Query('icon') icon?: string) {
+                             @Query('token') _token: string, @Query('badge') badge?: string, @Query('icon') icon?: string) {
     const token = requiredValue(_token, 'Token');
     this.#logger.debug('Sending test notification', message);
     return this.firebase.sendToToken(token, 'Test notification', message, badge, icon).then(() => {
@@ -41,7 +41,7 @@ export class AppController {
   }
 
   @Get('more-expensive')
-  async getMoreExpensive(@Query('date') dateString: string = DateTime.now().toISODate(), @Query('hours') hours: number = 2) {
+  async getMoreExpensive(@Query('date') dateString: string = DateTime.now().toISODate(), @Query('hours', ParseIntPipe) hours = 2) {
     const date = DateTime.fromISO(dateString);
     return this.costService.getsMoreExpensive(date.isValid ? date : DateTime.now().startOf('day'), hours);
   }
