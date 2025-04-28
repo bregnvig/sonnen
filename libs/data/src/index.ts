@@ -6,3 +6,4 @@ export * from './lib/battery-module.model';
 export * from './lib/firestore-paths';
 export * from './lib/event.model';
 export * from './lib/user.model';
+export * from './lib/command.model';
