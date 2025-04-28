@@ -22,7 +22,7 @@ export class YesterdaysUSOCBasedBatteryChargeService {
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(this.service.getLatestData());
       const usocYesterday = await this.getYesterdaysUSOCWhenProducingMoreThanConsuming();
-      const periodBeforeCharge = DateTime.now().diff(usocYesterday.timestamp.plus({ day: 1 }), 'hours').hours;
+      const periodBeforeCharge = DateTime.now().diff(usocYesterday.timestamp.plus({day: 1}), 'hours').hours;
       const getsMoreExpensive = await this.costService.getsMoreExpensive(DateTime.now(), periodBeforeCharge);
       const minuttes = (maxChargeTime - status.usoc - (usocYesterday?.usoc ?? 0));
 
@@ -36,6 +36,8 @@ export class YesterdaysUSOCBasedBatteryChargeService {
             usoc: status.usoc,
             chargeTime: minuttes,
             usocYesterday,
+            periodBeforeCharge,
+            getsMoreExpensive,
           },
         });
 
@@ -70,6 +72,8 @@ export class YesterdaysUSOCBasedBatteryChargeService {
           data: {
             usoc: status.usoc,
             usocYesterday,
+            periodBeforeCharge,
+            getsMoreExpensive,
           },
         } as SonnenEvent);
       } else {
@@ -89,7 +93,7 @@ export class YesterdaysUSOCBasedBatteryChargeService {
     job.start();
   }
 
-  async getYesterdaysUSOCWhenProducingMoreThanConsuming(yesterday = DateTime.now().minus({ days: 1 }).startOf('day')) {
+  async getYesterdaysUSOCWhenProducingMoreThanConsuming(yesterday = DateTime.now().minus({days: 1}).startOf('day')) {
     const batteryDay = await this.collection.getBattery(yesterday);
     const productionDay = await this.collection.getProduction(yesterday);
     const consumptionDay = await this.collection.getAverageConsumption(yesterday);
