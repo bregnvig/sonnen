@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { converter } from '@sonnen/backend/firebase';
 import { collectionPath, SonnenEvent, User } from '@sonnen/data';
 import { firestore } from 'firebase-admin';
-import { converter, FirebaseService } from '../../firebase';
+import { FirebaseService } from '../../firebase';
 
 
 @Injectable()

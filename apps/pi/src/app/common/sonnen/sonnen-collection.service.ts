@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { converter } from '@sonnen/backend/firebase';
 import { AverageConsumption, AverageConsumptionDay, BatteryDay, collectionPath, ProductionDay } from '@sonnen/data';
 import { DateTime } from 'luxon';
-import { converter, FirebaseService } from '../../firebase';
+import { FirebaseService } from '../../firebase';
 
 
 @Injectable()
