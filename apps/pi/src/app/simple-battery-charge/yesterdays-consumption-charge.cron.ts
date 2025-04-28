@@ -10,70 +10,69 @@ import { CostService, EventService, SonnenService } from '../common';
 import { ChargeService } from './charge.service';
 
 /**
- * This service is used to charge the battery based on the USOC level from yesterday.
- * If the USOC was high when the production exceeded the consumption, it will charge the battery for a shorter time based on the USOC level.
+ * This service is used to charge the battery based on yesterdays consumption between 4 and when there were a surplus production..
+ * Based on the consumption and the current battery level, it will charge the battery for a certain amount of time.
  */
 @Injectable()
-export class YesterdaysUSOCBasedBatteryChargeService {
-  readonly #logger = new Logger(YesterdaysUSOCBasedBatteryChargeService.name);
+export class YesterdaysConsumptionBasedBatteryChargeService {
+  readonly #logger = new Logger(YesterdaysConsumptionBasedBatteryChargeService.name);
 
-  constructor(private service: SonnenService, event: EventService, private costService: CostService, chargeService: ChargeService, private schedulerRegistry: SchedulerRegistry) {
+  constructor(service: SonnenService, event: EventService, chargeService: ChargeService, costService: CostService, schedulerRegistry: SchedulerRegistry) {
     this.#logger.debug(process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_TIME);
-    const maxChargeTime = (parseInt(process.env.SONNEN_BATTERY_CHARGE_TIME) || 30);
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
-      const status = await firstValueFrom(this.service.getLatestData());
-      const usocYesterday = (await chargeService.getSurplusProduction()).battery;
-      const periodBeforeCharge = DateTime.now().diff(usocYesterday.timestamp.plus({day: 1}), 'hours').hours;
-      const getsMoreExpensive = await this.costService.itGetsMoreExpensive(DateTime.now(), periodBeforeCharge);
-      const minuttes = (maxChargeTime - status.usoc - (usocYesterday?.usoc ?? 0));
+      const status = await firstValueFrom(service.getLatestData());
+      const usocYesterday = await chargeService.getSurplusProduction();
+      const periodBeforeChargeInHours = DateTime.now().diff(usocYesterday.battery.timestamp.plus({day: 1}), 'hours').hours;
+      const getsMoreExpensive = await costService.itGetsMoreExpensive(DateTime.now(), periodBeforeChargeInHours);
+      const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus();
 
       if (minuttes > 0 && getsMoreExpensive) {
         await event.add({
           message: `Batteriet er lavt. Oplader i ${minuttes} minutter`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysUSOCBasedBatteryChargeService.name}:ChargeStatus`,
+          source: `${YesterdaysConsumptionBasedBatteryChargeService.name}:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
             chargeTime: minuttes,
             usocYesterday,
-            periodBeforeCharge,
+            periodBeforeChargeInHours,
             getsMoreExpensive,
           },
         });
 
-        const success = await firstValueFrom(this.service.charge().pipe(
+        const success = await firstValueFrom(service.charge().pipe(
           map(() => true),
         ));
         if (!success) return;
         const timeout = setTimeout(async () => {
-          const usoc = (await firstValueFrom(this.service.getLatestData())).usoc;
+          const usoc = (await firstValueFrom(service.getLatestData())).usoc;
           await event.add({
             message: `Færdig med at oplade`,
-            source: `${YesterdaysUSOCBasedBatteryChargeService.name}:ChargeStatus`,
+            source: `${YesterdaysConsumptionBasedBatteryChargeService.name}:ChargeStatus`,
             type: 'info',
             data: {
               usoc,
             },
           });
-          await firstValueFrom(this.service.stop());
+          await firstValueFrom(service.stop());
         }, minuttes * 60 * 1000);
         try {
-          this.schedulerRegistry.deleteTimeout(`yesterdays-usoc-battery-charge-stop`);
+          schedulerRegistry.deleteTimeout(`yesterdays-usoc-battery-charge-stop`);
         } catch {
           this.#logger.debug('No timeout to delete');
         }
-        this.schedulerRegistry.addTimeout(`yesterdays-usoc-battery-charge-stop`, timeout);
+        schedulerRegistry.addTimeout(`yesterdays-usoc-battery-charge-stop`, timeout);
       } else if (!getsMoreExpensive) {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysUSOCBasedBatteryChargeService.name}:ChargeStatus`,
+          source: `${YesterdaysConsumptionBasedBatteryChargeService.name}:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
             usocYesterday,
-            periodBeforeCharge,
+            periodBeforeChargeInHours,
             getsMoreExpensive,
           },
         } as SonnenEvent);
@@ -81,7 +80,7 @@ export class YesterdaysUSOCBasedBatteryChargeService {
         await event.add({
           message: `Der er rigeligt med batteri`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysUSOCBasedBatteryChargeService.name}:ChargeStatus`,
+          source: `${YesterdaysConsumptionBasedBatteryChargeService.name}:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -93,5 +92,4 @@ export class YesterdaysUSOCBasedBatteryChargeService {
     schedulerRegistry.addCronJob('yesterdays-usoc-battery-check', job);
     job.start();
   }
-
 }

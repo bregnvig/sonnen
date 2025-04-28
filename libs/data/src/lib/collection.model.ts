@@ -6,7 +6,7 @@ export interface ProductionDay {
 }
 
 export interface AverageConsumption {
-  day: DateTime;
+  timestamp: DateTime;
   consumption: number;
 }
 
