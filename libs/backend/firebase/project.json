@@ -1,0 +1,20 @@
+{
+  "name": "backend/firebase",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/backend/firebase/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/backend/firebase",
+        "tsConfig": "libs/backend/firebase/tsconfig.lib.json",
+        "packageJson": "libs/backend/firebase/package.json",
+        "main": "libs/backend/firebase/src/index.ts",
+        "assets": ["libs/backend/firebase/*.md"]
+      }
+    }
+  }
+}
