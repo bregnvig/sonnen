@@ -31,7 +31,7 @@ export interface Status {
   pacTotalW: number;
   productionW: number;
   rsoc: number;
-  remainingCapacityW: number; // Added
+  remainingCapacityWh: number; // Added
   sac1: number;
   sac2: number | null;
   sac3: number | null;

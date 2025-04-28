@@ -117,7 +117,7 @@ export interface SonnenStatus {
    * Remaining capacity based on RSOC
    * Integer
    */
-  RemainingCapacity_W: number;
+  RemainingCapacity_Wh: number;
 
 
   /**

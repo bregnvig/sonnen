@@ -63,7 +63,7 @@ function status(data: SonnenStatus): Status {
       pacTotalW: data.Pac_total_W,
       productionW: data.Production_W,
       rsoc: data.RSOC,
-      remainingCapacityW: data.RemainingCapacity_W,
+      remainingCapacityWh: data.RemainingCapacity_Wh,
       sac1: data.Sac1,
       sac2: data.Sac2,
       sac3: data.Sac3,

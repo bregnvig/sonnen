@@ -41,8 +41,8 @@ export class ChargeService {
 
     const status = await firstValueFrom(this.sonnen.status$);
     const Wh = (average * (firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes)) / 60;
-    const insufficientWh = Wh - status.remainingCapacityW;
-    this.#logger.log('Charge time', `Remaining capacity: ${status.remainingCapacityW} Wh, Consumption: ${average} W, Time: ${firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes} minutes, Insufficient Wh: ${insufficientWh} Wh`);
+    const insufficientWh = Wh - status.remainingCapacityWh;
+    this.#logger.log('Charge time', `Remaining capacity: ${status.remainingCapacityWh} Wh, Consumption: ${average} W, Time: ${firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes} minutes, Insufficient Wh: ${insufficientWh} Wh`);
     return insufficientWh < 0
       ? 0
       : insufficientWh / parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) * 60;
