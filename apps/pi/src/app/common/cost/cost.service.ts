@@ -44,6 +44,7 @@ export class CostService {
       return true;
     }
 
+    periodInHours = Math.abs(periodInHours);
     let nextHour = date.plus({hours: 1});
     while (periodInHours > 0) {
       const nextPrice = prices.find(price => price.from.hasSame(nextHour, 'hour'));
