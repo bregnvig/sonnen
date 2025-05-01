@@ -1,0 +1,20 @@
+meta {
+  name: Set operarting mode
+  type: http
+  seq: 7
+}
+
+put {
+  url: http://192.168.86.31/api/v2/configurations
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Auth-Token: 7bbbe198-562a-47cd-9e20-aec4515b2bd8
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  EM_OperatingMode: 2
+}
