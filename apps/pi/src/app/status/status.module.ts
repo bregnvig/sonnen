@@ -4,6 +4,7 @@ import { FirebaseModule } from '../firebase';
 import { BatteryCronService } from './battery.cron';
 import { ConsumptionCronService } from './consumption.cron';
 import { CostCronService } from './cost.cron';
+import { PredictSolarProductionService } from './predict-solar-production.cron';
 import { ProductionCronService } from './production.cron';
 
 @Module({
@@ -12,7 +13,8 @@ import { ProductionCronService } from './production.cron';
     ConsumptionCronService,
     ProductionCronService,
     BatteryCronService,
-    CostCronService
+    CostCronService,
+    PredictSolarProductionService,
   ],
 })
-export class StatusModule { }
+export class StatusModule {}
