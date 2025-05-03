@@ -1,8 +1,10 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { FirebaseModule } from '../firebase';
-import { EventService, SonnenCollectionService, SonnenService } from './';
-import { CostService } from './cost/cost.service';
+import { CostService, EventService, SonnenCollectionService, SonnenService } from './';
+import { WeatherService } from './weather/weather.service';
+
+const publicServices = [SonnenService, SonnenCollectionService, EventService, CostService, WeatherService];
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { CostService } from './cost/cost.service';
     }),
     FirebaseModule,
   ],
-  providers: [SonnenService, SonnenCollectionService, EventService, CostService],
-  exports: [SonnenService, SonnenCollectionService, EventService, CostService],
+  providers: publicServices,
+  exports: publicServices,
 })
 export class CommonModule {}
