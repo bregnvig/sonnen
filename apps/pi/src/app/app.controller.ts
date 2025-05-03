@@ -2,9 +2,9 @@ import { Controller, Get, Logger, ParseIntPipe, Query } from '@nestjs/common';
 import { requiredValue } from '@sonnen/utils';
 import { DateTime } from 'luxon';
 import { AppService } from './app.service';
+import { ChargeService } from './battery-charge';
 import { CostService } from './common';
 import { FirebaseService } from './firebase';
-import { ChargeService } from './simple-battery-charge';
 
 @Controller()
 export class AppController {

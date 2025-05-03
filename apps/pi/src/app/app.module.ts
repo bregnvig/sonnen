@@ -6,9 +6,9 @@ import { firestore } from 'firebase-admin';
 import { of, switchMap } from 'rxjs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { BatteryChargeModule } from './battery-charge';
 import { CommonModule, EventService, SonnenService } from './common';
 import { FirebaseModule } from './firebase';
-import { BatteryChargeModule } from './simple-battery-charge';
 import { StatusModule } from './status';
 
 @Module({
