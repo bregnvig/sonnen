@@ -21,10 +21,10 @@ export class YesterdaysConsumptionBasedBatteryChargeService {
     this.#logger.debug(process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_TIME, process.env.SONNEN_BATTERY_CHARGE_WATTS);
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(service.getLatestData());
-      const usocYesterday = await chargeService.getSurplusProduction();
-      const periodBeforeChargeInHours = DateTime.now().diff(usocYesterday.battery.timestamp.plus({day: 1}), 'hours').hours;
+      const yesterdaysSurplusProduction = await chargeService.getSurplusProduction();
+      const periodBeforeChargeInHours = DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({day: 1}), 'hours').hours;
       const getsMoreExpensive = await costService.itGetsMoreExpensive(DateTime.now(), periodBeforeChargeInHours);
-      const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus();
+      const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({day: 1}));
 
       if (minuttes > 0 && getsMoreExpensive) {
         await event.add({
@@ -35,7 +35,7 @@ export class YesterdaysConsumptionBasedBatteryChargeService {
           data: {
             usoc: status.usoc,
             chargeTime: minuttes,
-            usocYesterday,
+            yesterdaysSurplusProduction,
             periodBeforeChargeInHours,
             getsMoreExpensive,
           },
@@ -71,7 +71,7 @@ export class YesterdaysConsumptionBasedBatteryChargeService {
           type: 'info',
           data: {
             usoc: status.usoc,
-            usocYesterday,
+            usocYesterday: yesterdaysSurplusProduction,
             periodBeforeChargeInHours,
             getsMoreExpensive,
           },
@@ -84,7 +84,7 @@ export class YesterdaysConsumptionBasedBatteryChargeService {
           type: 'info',
           data: {
             usoc: status.usoc,
-            usocYesterday,
+            usocYesterday: yesterdaysSurplusProduction,
           },
         } as SonnenEvent);
       }

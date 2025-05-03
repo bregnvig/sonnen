@@ -36,13 +36,15 @@ export class ChargeService {
     const firstTimeProductionMoreThenConsumption = productionDay.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
 
     const consumption = consumptionDay.consumption.filter(c => c.timestamp >= date && c.timestamp <= firstTimeProductionMoreThenConsumption);
+    const production = productionDay.production.filter(c => c.timestamp >= date && c.timestamp <= firstTimeProductionMoreThenConsumption);
 
-    const average = consumption.reduce((acc, c) => acc + c.consumption, 0) / consumption.length;
+    const averageConsumption = consumption.reduce((acc, c) => acc + c.consumption, 0) / consumption.length;
+    const averageProduction = production.reduce((acc, c) => acc + c.production, 0) / consumption.length;
 
     const status = await firstValueFrom(this.sonnen.status$);
-    const Wh = (average * (firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes)) / 60;
+    const Wh = ((averageConsumption - averageProduction) * (firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes)) / 60;
     const insufficientWh = Wh - status.remainingCapacityWh;
-    this.#logger.log('Charge time', `Remaining capacity: ${status.remainingCapacityWh} Wh, Consumption: ${average} W, Time: ${firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes} minutes, Insufficient Wh: ${insufficientWh} Wh`);
+    this.#logger.log('Charge time', `Remaining capacity: ${status.remainingCapacityWh} Wh, Consumption: ${averageConsumption} W, Production: ${averageProduction} W, Time: ${firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes} minutes, Insufficient Wh: ${insufficientWh} Wh`);
     return insufficientWh < 0
       ? 0
       : insufficientWh / parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) * 60;
