@@ -1,0 +1,21 @@
+meta {
+  name: Weather
+  type: http
+  seq: 9
+}
+
+get {
+  url: https://api.open-meteo.com/v1/forecast?latitude={{process.env.LATITUDE}}&longitude={{process.env.LONGITUDE}}&daily=weather_code,sunrise,sunset&hourly=temperature_2m,cloud_cover&timezone=auto&forecast_days=2
+  body: none
+  auth: inherit
+}
+
+params:query {
+  latitude: {{process.env.LATITUDE}}
+  longitude: {{process.env.LONGITUDE}}
+  daily: weather_code,sunrise,sunset
+  hourly: temperature_2m,cloud_cover
+  timezone: auto
+  forecast_days: 2
+  ~current: rain,cloud_cover
+}

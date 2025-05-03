@@ -1,0 +1,15 @@
+meta {
+  name: Status
+  type: http
+  seq: 5
+}
+
+get {
+  url: http://192.168.86.31/api/v2/status
+  body: none
+  auth: none
+}
+
+headers {
+  Auth-Token: {{process.env.SONNEN_AUTH_TOKEN}}
+}

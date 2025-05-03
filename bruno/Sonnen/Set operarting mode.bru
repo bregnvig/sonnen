@@ -1,0 +1,20 @@
+meta {
+  name: Set operarting mode
+  type: http
+  seq: 7
+}
+
+put {
+  url: http://192.168.86.31/api/v2/configurations
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Auth-Token: {{process.env.SONNEN_AUTH_TOKEN}}
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  EM_OperatingMode: 2
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Consumption based charge
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{host}}/api/charge-time?date=2025-04-28T02:00:00.000Z
+  body: none
+  auth: inherit
+}
+
+params:query {
+  date: 2025-04-28T02:00:00.000Z
+}
