@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: https://api.open-meteo.com/v1/forecast?latitude=55.7825&longitude=12.3686&daily=weather_code,sunrise,sunset&hourly=temperature_2m,cloud_cover&timezone=auto&forecast_days=2
+  url: https://api.open-meteo.com/v1/forecast?latitude={{process.env.LATITUDE}}&longitude={{process.env.LONGITUDE}}&daily=weather_code,sunrise,sunset&hourly=temperature_2m,cloud_cover&timezone=auto&forecast_days=2
   body: none
   auth: inherit
 }
 
 params:query {
-  latitude: 55.7825
-  longitude: 12.3686
+  latitude: {{process.env.LATITUDE}}
+  longitude: {{process.env.LONGITUDE}}
   daily: weather_code,sunrise,sunset
   hourly: temperature_2m,cloud_cover
   timezone: auto

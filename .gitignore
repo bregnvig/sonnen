@@ -50,3 +50,4 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 /apps/ui/src/environments/
 /saved-data
+/bruno/Sonnen/.env
