@@ -2,14 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { requiredValue } from '@sonnen/utils';
 import { DateTime } from 'luxon';
-<<<<<<< HEAD
-import { firstValueFrom } from 'rxjs';
-import SunCalc from 'suncalc';
-import { EventService, SonnenService, WeatherService } from '../common';
-=======
 import SunCalc from 'suncalc';
 import { EventService, SonnenCollectionService, WeatherService } from '../common';
->>>>>>> bdcf798a55a2c2873d82bf9e59b94fac44c6a503
 
 const predictedSolarProduction = (
   date: DateTime,
@@ -47,11 +41,7 @@ export class PredictSolarProductionService {
   latitude = requiredValue(parseFloat(process.env.SONNEN_LATITUDE), 'Latitude');
   longitude = requiredValue(parseFloat(process.env.SONNEN_LONGITUDE), 'Longitude');
 
-<<<<<<< HEAD
-  constructor(private event: EventService, private sonnen: SonnenService, private weatherService: WeatherService) {
-=======
   constructor(private event: EventService, private collection: SonnenCollectionService, private weatherService: WeatherService) {
->>>>>>> bdcf798a55a2c2873d82bf9e59b94fac44c6a503
     this.#logger.debug('PredictSolarProductionService started', this.latitude, this.longitude);
   }
 
@@ -59,10 +49,6 @@ export class PredictSolarProductionService {
   async predictSolarProduction() {
     const now = DateTime.now();
     const weatherPrediction = await this.weatherService.findPredictionForHour(now, this.latitude, this.longitude);
-<<<<<<< HEAD
-    const production = (await firstValueFrom(this.sonnen.status$)).productionW;
-=======
->>>>>>> bdcf798a55a2c2873d82bf9e59b94fac44c6a503
 
     if (!weatherPrediction) {
       await this.event.add({
@@ -75,20 +61,6 @@ export class PredictSolarProductionService {
           date: now.toISO(),
         },
       });
-<<<<<<< HEAD
-    }
-
-    const aiPredicted = predictedSolarProduction(now, weatherPrediction.temperature, weatherPrediction.cloud, this.latitude, this.longitude);
-
-    const diff = Math.abs(aiPredicted - production);
-    await this.event.add({
-      type: 'info',
-      source: `${PredictSolarProductionService.name}:Prediction`,
-      message: `AI forudsiger ${aiPredicted} W produktion, faktisk produktion ${production} W. Forskel ${diff} W`,
-      data: {
-        aiPredicted,
-        production,
-=======
       return;
     }
 
@@ -106,15 +78,10 @@ export class PredictSolarProductionService {
       data: {
         aiPredicted,
         production: averageProduction,
->>>>>>> bdcf798a55a2c2873d82bf9e59b94fac44c6a503
         diff,
         weatherPrediction,
       },
     });
-<<<<<<< HEAD
-    await this.event.sendToUsers('Forudsigelse af solproduktion', `AI forudsiger ${aiPredicted} W produktion, faktisk produktion ${production} W. Forskel ${diff} W`);
-=======
     await this.event.sendToUsers('Forudsigelse af solproduktion', `AI forudsiger ${aiPredicted} W produktion, faktisk produktion ${averageProduction} W. Forskel ${diff} W`);
->>>>>>> bdcf798a55a2c2873d82bf9e59b94fac44c6a503
   }
 }
