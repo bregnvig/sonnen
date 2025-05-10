@@ -38,6 +38,7 @@ export class AfternoonChargeService {
       await this.eventService.sendToUsers('Eftermiddagsopladning', `Batteriet er på ${usoc}%. Vil blive opladet i ${chargeTime} minutter`);
       await this.eventService.add({
         type: 'info',
+        title: 'Opladning',
         source: `${AfternoonChargeService.name}:AfternoonCharge`,
         message: `Batteriet er på ${usoc}%. Vil blive opladet i ${chargeTime} minutter`,
         data: {
@@ -50,6 +51,7 @@ export class AfternoonChargeService {
     } else {
       await this.eventService.add({
         type: 'info',
+        title: 'Opladning',
         source: `${AfternoonChargeService.name}:AfternoonCharge`,
         message: `Batteriet er på ${usoc}%. Der er ingen grund til at oplade 👍`,
         data: {

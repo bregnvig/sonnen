@@ -35,6 +35,7 @@ export class BatteryCronService {
     const message = `Minimum batteri niveau var ${this.minUSOC}% kl. ${this.minTimestamp?.toFormat('HH:mm')}`;
     await this.eventService.add({
       type: 'info',
+      title: 'Batteri procent',
       source: `${BatteryCronService.name}:MinimumBatteryLevel`,
       message,
       data: {

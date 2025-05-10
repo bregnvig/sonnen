@@ -20,6 +20,7 @@ export class SimpleBatteryChargeService {
 
       if (minuttes > 0) {
         await event.add({
+          title: 'Opladning',
           message: `Battery low. Charge battery for ${minuttes} minutes`,
           timestamp: firestore.Timestamp.now(),
           source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
@@ -37,6 +38,7 @@ export class SimpleBatteryChargeService {
         const timeout = setTimeout(async () => {
           const usoc = (await firstValueFrom(this.service.getLatestData())).usoc;
           await event.add({
+            title: 'Opladning',
             message: `Battery charge timeout. Stop charging`,
             source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
             type: 'info',

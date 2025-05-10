@@ -50,6 +50,7 @@ export class SonnenService {
       catchError(async error => {
         this.chargeStatus.next(false);
         await this.event.add({
+          title: 'Lade problemer',
           source: `${SonnenService.name}:ChargeError`,
           type: 'error',
           message: error.message,

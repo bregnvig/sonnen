@@ -29,6 +29,7 @@ export class ProductionCronService {
       this.latestNotification = DateTime.now();
       const message = `Produktionen er nu højere end forbruget. Du bruger ${status.consumptionAvg}W men du producerer ${status.productionW}W`;
       await this.eventService.add({
+        title: 'Produktion',
         type: 'info',
         source: `${ProductionCronService.name}:SurplusProduction`,
         message,

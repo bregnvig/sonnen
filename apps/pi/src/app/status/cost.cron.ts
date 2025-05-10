@@ -27,6 +27,7 @@ export class CostCronService {
     });
     const message: SonnenEvent = {
       type: 'info',
+      title: 'Priser',
       source: `${CostCronService.name}:CostInfo`,
       message: `Minimums pris ${minPrice.kWh} kr/kWh kl. ${minPrice.from.toFormat('HH:mm')} - Maximums pris ${maxPrice.kWh} kr/kWh kl. ${maxPrice.from.toFormat('HH:mm')}`,
       data: {

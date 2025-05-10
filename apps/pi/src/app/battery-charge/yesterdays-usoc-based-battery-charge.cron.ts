@@ -29,6 +29,7 @@ export class YesterdaysUSOCBasedBatteryChargeService {
 
       if (minuttes > 0 && getsMoreExpensive) {
         await event.add({
+          title: 'Opladning',
           message: `Batteriet er lavt. Oplader i ${minuttes} minutter`,
           timestamp: firestore.Timestamp.now(),
           source: `${YesterdaysUSOCBasedBatteryChargeService.name}:ChargeStatus`,
@@ -49,6 +50,7 @@ export class YesterdaysUSOCBasedBatteryChargeService {
         const timeout = setTimeout(async () => {
           const usoc = (await firstValueFrom(this.service.getLatestData())).usoc;
           await event.add({
+            title: 'Opladning',
             message: `Færdig med at oplade`,
             source: `${YesterdaysUSOCBasedBatteryChargeService.name}:ChargeStatus`,
             type: 'info',

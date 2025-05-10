@@ -54,6 +54,7 @@ export class PredictSolarProductionService {
       await this.event.add({
         source: `${PredictSolarProductionService.name}:WeatherPrediction`,
         type: 'error',
+        title: 'Problemer med prognosen',
         message: 'Kunne ikke finde vejrprognose',
         data: {
           latitude: this.latitude,
@@ -82,6 +83,7 @@ export class PredictSolarProductionService {
     await this.event.add({
       type: 'info',
       source: `${PredictSolarProductionService.name}:Prediction`,
+      title: 'Forudsigelse',
       message: `AI forudsiger ${aiPredicted} W produktion, faktisk gennemsnitlige produktion ${averageProduction} W. Forskel ${diff} W`,
       data: {
         aiPredicted,
