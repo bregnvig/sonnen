@@ -8,5 +8,6 @@ export const collectionPath = {
   production: 'production',
   battery: 'battery',
   events: 'events',
+  prediction: 'prediction',
   users: 'users',
 } as const;

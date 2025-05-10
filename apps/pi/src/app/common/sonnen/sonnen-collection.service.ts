@@ -22,6 +22,10 @@ export class SonnenCollectionService {
     await this.firebase.writeDayData(collectionPath.production, {production});
   }
 
+  async updatePrediction(params: { production: number, prediction: number, difference: number, cloud: number, temperature: number }) {
+    await this.firebase.writeDayData(collectionPath.prediction, params);
+  }
+
   /**
    * Will look for the production for the given date. If not found go to the previous date. Max 7 days
    * @param date

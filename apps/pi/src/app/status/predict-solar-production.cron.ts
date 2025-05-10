@@ -45,7 +45,7 @@ export class PredictSolarProductionService {
     this.#logger.debug('PredictSolarProductionService started', this.latitude, this.longitude);
   }
 
-  @Cron('0 5-17 * * *')
+  @Cron('0 5-20 * * *')
   async predictSolarProduction() {
     const now = DateTime.now();
     const weatherPrediction = await this.weatherService.findPredictionForHour(now, this.latitude, this.longitude);
@@ -71,6 +71,14 @@ export class PredictSolarProductionService {
     const aiPredicted = predictedSolarProduction(now, weatherPrediction.temperature, weatherPrediction.cloud, this.latitude, this.longitude);
 
     const diff = Math.abs(aiPredicted - averageProduction);
+
+    await this.collection.updatePrediction({
+      prediction: aiPredicted,
+      production: averageProduction,
+      difference: diff,
+      temperature: weatherPrediction.temperature,
+      cloud: weatherPrediction.cloud,
+    });
     await this.event.add({
       type: 'info',
       source: `${PredictSolarProductionService.name}:Prediction`,
