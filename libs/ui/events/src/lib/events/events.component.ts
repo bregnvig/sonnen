@@ -15,7 +15,7 @@ import { CardPageComponent } from '@sonnen/common';
         <mat-card>
           <mat-card-header>
             <mat-card-title>
-              {{ event.type | titlecase }}
+              {{ (event.title ?? event.type) | titlecase }}
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>

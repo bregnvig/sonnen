@@ -84,7 +84,7 @@ export class PredictSolarProductionService {
       type: 'info',
       source: `${PredictSolarProductionService.name}:Prediction`,
       title: 'Forudsigelse',
-      message: `AI forudsiger ${aiPredicted} W produktion, faktisk gennemsnitlige produktion ${averageProduction} W. Forskel ${diff} W`,
+      message: `AI forudsiger ${aiPredicted.toFixed(2)} W produktion, faktisk gennemsnitlige produktion ${averageProduction.toFixed(2)} W. Forskel ${diff.toFixed(2)} W`,
       data: {
         aiPredicted,
         production: averageProduction,
@@ -92,6 +92,6 @@ export class PredictSolarProductionService {
         weatherPrediction,
       },
     });
-    await this.event.sendToUsers('Forudsigelse af solproduktion', `AI forudsiger ${aiPredicted} W produktion, faktisk produktion ${averageProduction} W. Forskel ${diff} W`);
+    await this.event.sendToUsers('Forudsigelse af solproduktion', `AI forudsiger ${aiPredicted.toFixed(2)} W produktion, faktisk produktion ${averageProduction.toFixed(2)} W. Forskel ${diff.toFixed(2)} W`);
   }
 }
