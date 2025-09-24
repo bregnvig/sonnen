@@ -8,8 +8,8 @@ import { firstValueFrom, map } from 'rxjs';
 import { EventService, SonnenService } from '../common';
 
 @Injectable()
-export class SimpleBatteryChargeService {
-  readonly #logger = new Logger(SimpleBatteryChargeService.name);
+export class SimpleBatteryChargeCronJob {
+  readonly #logger = new Logger(SimpleBatteryChargeCronJob.name);
 
   constructor(private service: SonnenService, event: EventService, private schedulerRegistry: SchedulerRegistry) {
     this.#logger.debug('SimpleBatteryChargeService', process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_TIME);
@@ -23,7 +23,7 @@ export class SimpleBatteryChargeService {
           title: 'Opladning',
           message: `Battery low. Charge battery for ${minuttes} minutes`,
           timestamp: firestore.Timestamp.now(),
-          source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
+          source: `${SimpleBatteryChargeCronJob.name}:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -40,7 +40,7 @@ export class SimpleBatteryChargeService {
           await event.add({
             title: 'Opladning',
             message: `Battery charge timeout. Stop charging`,
-            source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
+            source: `${SimpleBatteryChargeCronJob.name}:ChargeStatus`,
             type: 'info',
             data: {
               usoc,
@@ -58,7 +58,7 @@ export class SimpleBatteryChargeService {
         await event.add({
           message: `Sufficient battery level`,
           timestamp: firestore.Timestamp.now(),
-          source: `${SimpleBatteryChargeService.name}:ChargeStatus`,
+          source: `${SimpleBatteryChargeCronJob.name}:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,

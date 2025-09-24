@@ -6,9 +6,9 @@ import { CostService, EventService, SonnenService } from '../common';
 import { FirebaseService } from '../firebase';
 
 @Injectable()
-export class AfternoonChargeService {
+export class AfternoonChargeCronJob {
 
-  #logger = new Logger(AfternoonChargeService.name);
+  #logger = new Logger(AfternoonChargeCronJob.name);
 
   constructor(private sonnenService: SonnenService, private schedulerRegistry: SchedulerRegistry, private costService: CostService, private eventService: EventService, private firebase: FirebaseService) {
     this.#logger.debug('AfternoonChargeService started');
@@ -26,8 +26,8 @@ export class AfternoonChargeService {
     const chargeTime = usoc < 75 ? 100 - usoc : 0;
 
     if (chargeTime > 0) {
-      const startDelay = now.set({hour: 17, minute: 0, second: 0, millisecond: 0}).minus({minutes: chargeTime}).diff(now, 'milliseconds').milliseconds;
-      const stopDelay = now.set({hour: 17, minute: 0, second: 0, millisecond: 0}).diff(now, 'milliseconds').milliseconds;
+      const startDelay = now.set({ hour: 17, minute: 0, second: 0, millisecond: 0 }).minus({ minutes: chargeTime }).diff(now, 'milliseconds').milliseconds;
+      const stopDelay = now.set({ hour: 17, minute: 0, second: 0, millisecond: 0 }).diff(now, 'milliseconds').milliseconds;
 
       const start = setTimeout(async () => {
         await firstValueFrom(this.sonnenService.charge());
@@ -39,7 +39,7 @@ export class AfternoonChargeService {
       await this.eventService.add({
         type: 'info',
         title: 'Opladning',
-        source: `${AfternoonChargeService.name}:AfternoonCharge`,
+        source: `${AfternoonChargeCronJob.name}:AfternoonCharge`,
         message: `Batteriet er på ${usoc}%. Vil blive opladet i ${chargeTime} minutter`,
         data: {
           usoc,
@@ -52,7 +52,7 @@ export class AfternoonChargeService {
       await this.eventService.add({
         type: 'info',
         title: 'Opladning',
-        source: `${AfternoonChargeService.name}:AfternoonCharge`,
+        source: `${AfternoonChargeCronJob.name}:AfternoonCharge`,
         message: `Batteriet er på ${usoc}%. Der er ingen grund til at oplade 👍`,
         data: {
           usoc,
