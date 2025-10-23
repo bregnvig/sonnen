@@ -18,7 +18,7 @@ export class BatteryCronService {
   @Cron(CronExpression.EVERY_MINUTE)
   async minimumBatteryLevel() {
     const usoc = await firstValueFrom(this.service.status$.pipe(
-      map(({usoc}) => usoc),
+      map(({ usoc }) => usoc),
     ));
     await this.collection.updateBatteryLevel(usoc);
     if (this.minUSOC > usoc) {
@@ -30,7 +30,7 @@ export class BatteryCronService {
   @Cron('0 10 * * *')
   async reportMinimumBatteryLevel() {
     const usoc = await firstValueFrom(this.service.status$.pipe(
-      map(({usoc}) => usoc),
+      map(({ usoc }) => usoc),
     ));
     const message = `Minimum batteri niveau var ${this.minUSOC}% kl. ${this.minTimestamp?.toFormat('HH:mm')}`;
     await this.eventService.add({
@@ -44,8 +44,8 @@ export class BatteryCronService {
         minTimestamp: this.minTimestamp?.toFormat('HH:mm'),
       },
     });
-    await this.eventService.sendToUsers('Minimum batteri', message);
     this.minTimestamp = undefined;
     this.minUSOC = 100;
+    await this.eventService.sendToUsers('Minimum batteri', message);
   }
 }

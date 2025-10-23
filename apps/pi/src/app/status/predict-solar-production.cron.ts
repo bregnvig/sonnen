@@ -65,9 +65,9 @@ export class PredictSolarProductionService {
       return;
     }
 
-    const oneHourAgo = now.minus({hours: 1});
+    const oneHourAgo = now.minus({ hours: 1 });
     const averageProduction = await this.collection.getProduction(now)
-      .then(({production}) => production.filter(p => p.timestamp >= oneHourAgo && p.timestamp <= now))
+      .then(({ production }) => production.filter(p => p.timestamp >= oneHourAgo && p.timestamp <= now))
       .then(production => production.reduce((acc, p) => acc + p.production, 0) / production.length);
     const aiPredicted = predictedSolarProduction(now, weatherPrediction.temperature, weatherPrediction.cloud, this.latitude, this.longitude);
 
@@ -92,6 +92,5 @@ export class PredictSolarProductionService {
         weatherPrediction,
       },
     });
-    await this.event.sendToUsers('Forudsigelse af solproduktion', `AI forudsiger ${aiPredicted.toFixed(2)} W produktion, faktisk produktion ${averageProduction.toFixed(2)} W. Forskel ${diff.toFixed(2)} W`);
   }
 }
