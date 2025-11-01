@@ -5,7 +5,27 @@ meta {
 }
 
 get {
-  url: https://elprisenligenu.dk/api/v1/prices/2025/04-20_DK2.json
+  url: https://elprisenligenu.dk/api/v1/prices/{{currentYear}}/{{currentMonth}}-{{currentDay}}_DK2.json
   body: none
   auth: inherit
+}
+
+script:pre-request {
+  const now = new Date();
+  
+  // Henter årstallet (f.eks. 2024)
+  const year = now.getFullYear();
+  
+  // Henter måned (getMonth() er 0-baseret, så +1)
+  // .padStart(2, '0') sikrer, at du får '05' i stedet for '5'
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  
+  // Henter dagen
+  // .padStart(2, '0') sikrer, at du får '01' i stedet for '1'
+  const day = String(now.getDate()).padStart(2, '0');
+  
+  // Sætter variablerne, som Bruno kan bruge i URL'en
+  bru.setVar("currentYear", year);
+  bru.setVar("currentMonth", month);
+  bru.setVar("currentDay", day);
 }

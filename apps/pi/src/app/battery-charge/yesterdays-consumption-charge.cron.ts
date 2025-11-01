@@ -10,7 +10,7 @@ import { CostService, EventService, SonnenService } from '../common';
 import { ChargeService } from './charge.service';
 
 /**
- * This service is used to charge the battery based on yesterdays consumption between 4 and when there were a surplus production..
+ * This service is used to charge the battery based on yesterday consumption between 4 and when there were a surplus production.
  * Based on the consumption and the current battery level, it will charge the battery for a certain amount of time.
  */
 @Injectable()
