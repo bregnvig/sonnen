@@ -10,15 +10,14 @@
       "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
-        "project": "libs/ui/api/ng-package.json"
+        "project": "libs/ui/api/ng-package.json",
+        "tsConfig": "libs/ui/api/tsconfig.lib.json"
       },
       "configurations": {
         "production": {
           "tsConfig": "libs/ui/api/tsconfig.lib.prod.json"
         },
-        "development": {
-          "tsConfig": "libs/ui/api/tsconfig.lib.json"
-        }
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
