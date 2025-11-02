@@ -8,6 +8,6 @@ import { YesterdaysConsumptionBasedBatteryChargeCronJob } from './yesterdays-con
 @Module({
   imports: [CommonModule, FirebaseModule],
   providers: [YesterdaysConsumptionBasedBatteryChargeCronJob, AfternoonChargeCronJob, ChargeService],
-  exports: [ChargeService],
+  exports: [ChargeService, AfternoonChargeCronJob],
 })
 export class BatteryChargeModule {}

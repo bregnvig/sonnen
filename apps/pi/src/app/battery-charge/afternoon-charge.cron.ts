@@ -20,7 +20,8 @@ export class AfternoonChargeCronJob {
     this.#logger.debug('AfternoonChargeService started');
     const times = SunCalc.getTimes(new Date(), parseFloat(process.env.SONNEN_LATITUDE), parseFloat(process.env.SONNEN_LONGITUDE));
     const sunset = DateTime.fromJSDate(times.sunsetStart);
-    const milliseconds = DateTime.now().diff(sunset, 'milliseconds').milliseconds;
+    const milliseconds = sunset.diff(DateTime.now(), 'milliseconds').milliseconds;
+    this.#logger.debug(`Sunset ${sunset.toFormat('HH:mm')}. ${(milliseconds / 60000).toFixed(0)} minutes from now`);
     const chargeCheck = setTimeout(() => this.afternoonChargeCheck(sunset), milliseconds);
     this.schedulerRegistry.addTimeout('afternoon-charge-check', chargeCheck);
   }
@@ -28,8 +29,8 @@ export class AfternoonChargeCronJob {
   async afternoonChargeCheck(sunset: DateTime) {
 
     const now = DateTime.now();
-    const usoc = await firstValueFrom(this.sonnenService.usoc$);
 
+    const usoc = await firstValueFrom(this.sonnenService.usoc$);
     const chargeTime = usoc < 75 ? 100 - usoc : 0;
 
     if (chargeTime > 0) {

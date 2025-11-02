@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { ChargeService } from './battery-charge';
 import { CostService } from './common';
 import { FirebaseService } from './firebase';
+import { AfternoonChargeCronJob } from './battery-charge/afternoon-charge.cron';
 
 @Controller()
 export class AppController {
@@ -13,8 +14,12 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private chargeService: ChargeService,
+    afternoonChargeCheck: AfternoonChargeCronJob,
     private readonly costService: CostService,
-    private firebase: FirebaseService) { }
+    private firebase: FirebaseService) {
+    const now = DateTime.now();
+    now.hour > 1 && afternoonChargeCheck.planChargeCheck();
+  }
 
   @Get()
   getData() {
@@ -23,7 +28,7 @@ export class AppController {
 
   @Get('notification')
   async sendTestNotification(@Query('message') message: string,
-    @Query('token') _token: string, @Query('badge') badge?: string, @Query('icon') icon?: string) {
+                             @Query('token') _token: string, @Query('badge') badge?: string, @Query('icon') icon?: string) {
     const token = requiredValue(_token, 'Token');
     this.#logger.debug('Sending test notification', message);
     return this.firebase.sendToToken(token, 'Test notification', message, badge, icon).then(() => {

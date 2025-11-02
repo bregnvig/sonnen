@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "serve:pi": "nx serve pi --no-tui",
     "deploy:hosting": "nx build ui --prod && firebase deploy --only hosting"
   },
   "private": true,

@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: https://api.open-meteo.com/v1/forecast?latitude={{process.env.LATITUDE}}&longitude={{process.env.LONGITUDE}}&hourly=temperature_2m,cloud_cover&timezone=Europe/Berlin&forecast_days=1
+  url: https://api.open-meteo.com/v1/forecast?latitude={{process.env.SONNEN_LATITUDE}}&longitude={{process.env.SONNEN_LONGITUDE}}&hourly=temperature_2m,cloud_cover&timezone=Europe/Berlin&forecast_days=1
   body: none
   auth: inherit
 }
 
 params:query {
-  latitude: {{process.env.LATITUDE}}
-  longitude: {{process.env.LONGITUDE}}
+  latitude: {{process.env.SONNEN_LATITUDE}}
+  longitude: {{process.env.SONNEN_LONGITUDE}}
   hourly: temperature_2m,cloud_cover
   timezone: Europe/Berlin
   forecast_days: 1
