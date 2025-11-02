@@ -35,7 +35,7 @@ export class AfternoonChargeCronJob {
 
     if (chargeTime > 0) {
       const price = (await firstValueFrom(this.costService.getPrices(sunset.minus({ minutes: chargeTime })))).find(price => price.from.hasSame(now, 'hour'));
-      this.#logger.debug(`AfternoonChargeService: ${ usoc }%, price: ${ price?.kWh } kr/kWh`);
+      this.#logger.debug(`AfternoonChargeService: state: ${ usoc }%, price: ${ price?.kWh } kr/kWh`);
       const startDelay = sunset.minus({ minutes: chargeTime }).diff(now, 'milliseconds').milliseconds;
       const stopDelay = sunset.diff(now, 'milliseconds').milliseconds;
       const chargePrice = (parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) / 1000) * (chargeTime / 60) * (price?.kWh ?? 0);
@@ -47,7 +47,8 @@ export class AfternoonChargeCronJob {
         await firstValueFrom(this.sonnenService.stop());
       }, stopDelay);
 
-      await this.eventService.sendToUsers('Eftermiddagsopladning', `Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${chargePrice} kr.`);
+      this.#logger.debug(`Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${chargePrice.toFixed(2)} kr.`);
+      await this.eventService.sendToUsers('Eftermiddagsopladning', `Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${chargePrice.toFixed(2)} kr.`);
       await this.eventService.add({
         type: 'info',
         title: 'Opladning',
