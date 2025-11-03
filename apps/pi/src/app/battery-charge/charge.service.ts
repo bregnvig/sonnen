@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import process from 'node:process';
 import { firstValueFrom } from 'rxjs';
 import { SonnenCollectionService, SonnenService } from '../common';
+import { AverageConsumptionDay, BatteryDay, ProductionDay } from '@sonnen/data';
 
 @Injectable()
 export class ChargeService {
@@ -15,25 +16,37 @@ export class ChargeService {
    * Returns consumption, production and battery data for date when the production was higher than the consumption.
    * @param date
    */
-  async getSurplusProduction(date = DateTime.now().minus({days: 1}).startOf('day')) {
-    const batteryDay = await this.collection.getBattery(date);
-    const productionDay = await this.collection.getProduction(date);
-    const consumptionDay = await this.collection.getAverageConsumption(date);
+  async getSurplusProduction(date = DateTime.now().minus({ days: 1 }).startOf('day')): Promise<{
+    battery: BatteryDay['battery'][0],
+    production: ProductionDay['production'][0],
+    consumption: AverageConsumptionDay['consumption'][0]
+  } | undefined> {
+    try {
+      const batteryDay = await this.collection.getBattery(date);
+      const productionDay = await this.collection.getProduction(date);
+      const consumptionDay = await this.collection.getAverageConsumption(date);
 
-    const firstTimeProductionMoreThenConsumption = productionDay.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
+      const firstTimeProductionMoreThenConsumption = productionDay.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
 
-    return {
-      battery: batteryDay.battery.find(b => b.timestamp.hasSame(firstTimeProductionMoreThenConsumption, 'minute')),
-      production: productionDay.production.find(p => p.timestamp.hasSame(firstTimeProductionMoreThenConsumption, 'minute')),
-      consumption: consumptionDay.consumption.find(c => c.timestamp.hasSame(firstTimeProductionMoreThenConsumption, 'minute')),
-    };
+      return firstTimeProductionMoreThenConsumption ? {
+        battery: batteryDay.battery.find(b => b.timestamp.hasSame(firstTimeProductionMoreThenConsumption, 'minute')),
+        production: productionDay.production.find(p => p.timestamp.hasSame(firstTimeProductionMoreThenConsumption, 'minute')),
+        consumption: consumptionDay.consumption.find(c => c.timestamp.hasSame(firstTimeProductionMoreThenConsumption, 'minute')),
+      } : undefined;
+    } catch (error) {
+      this.#logger.error(error);
+    }
+    return undefined;
   }
 
-  async getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(date = DateTime.now().minus({days: 1}).startOf('day')) {
+  async getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(date = DateTime.now().minus({ days: 1 }).startOf('day')) {
     const productionDay = await this.collection.getProduction(date);
     const consumptionDay = await this.collection.getAverageConsumption(date);
 
     const firstTimeProductionMoreThenConsumption = productionDay.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
+    if (!firstTimeProductionMoreThenConsumption) {
+      return this.getChargeMinutesByUSOC();
+    }
 
     const consumption = consumptionDay.consumption.filter(c => c.timestamp >= date && c.timestamp <= firstTimeProductionMoreThenConsumption);
     const production = productionDay.production.filter(c => c.timestamp >= date && c.timestamp <= firstTimeProductionMoreThenConsumption);
@@ -44,11 +57,18 @@ export class ChargeService {
     const status = await firstValueFrom(this.sonnen.status$);
     const Wh = ((averageConsumption - averageProduction) * (firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes)) / 60;
     const insufficientWh = Wh - status.remainingCapacityWh;
-    this.#logger.log('Charge time', `Remaining capacity: ${status.remainingCapacityWh} Wh, Consumption: ${averageConsumption} W, Production: ${averageProduction} W, Time: ${firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes} minutes, Insufficient Wh: ${insufficientWh} Wh`);
+    this.#logger.log('Charge time', `Remaining capacity: ${ status.remainingCapacityWh } Wh, Consumption: ${ averageConsumption } W, Production: ${ averageProduction } W, Time: ${ firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes } minutes, Insufficient Wh: ${ insufficientWh } Wh`);
     return insufficientWh < 0
       ? 0
       : insufficientWh / parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) * 60;
   }
 
+  async getChargeMinutesByUSOC(target = 100): Promise<number> {
+    // Antal minutter = ( (Batterikapacitet i Wh * (Målprocent - Startprocent) / 100) / Ladeeffekt i W ) * 60
+    const capacity = await firstValueFrom(this.sonnen.getCapacity());
+    const status = await firstValueFrom(this.sonnen.status$);
+    const effect = parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS);
+    return ((capacity * (target - status.usoc) / 100) / effect) * 60;
+  }
 
 }

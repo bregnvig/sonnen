@@ -1,32 +1,181 @@
 export interface SonnenLatestData {
-  Apparent_output: number; // VA - All AC output of apparent power
-  BackupBuffer: number; // % - Backup-buffer in percentage
-  BatteryCharging: boolean; // True if charging
-  BatteryDischarging: boolean; // True if discharging
-  Consumption_Avg: number; // W - House consumption (60s average)
-  Consumption_W: number; // W - House consumption (direct)
-  Fac: number; // Hz - AC frequency
-  FlowConsumptionBattery: boolean; // True if battery feeds consumption
-  FlowConsumptionGrid: boolean; // True if grid feeds consumption
-  FlowConsumptionProduction: boolean; // True if production feeds consumption
-  FlowGridBattery: boolean; // True if battery is charging from grid
-  FlowProductionBattery: boolean; // True if production is charging battery
-  FlowProductionGrid: boolean; // True if production feeds into grid
-  GridFeedIn_W: number; // W - Negative = consumption, Positive = feed-in
-  IsSystemInstalled: number; // 0 or 1 - Indicates if system is installed
-  OperatingMode: number; // Operating mode: 1 = Manual, 2 = Auto
-  Pac_total_W: number; // W - Inverter AC Power (+ = discharge, - = charge)
-  Production_W: number; // W - PV production
-  RSOC: number; // % - Relative state of charge
-  RemainingCapacity_W: number; // Wh - Remaining capacity based on RSOC
-  Sac1: number; // VA - Apparent power on Phase 1
-  Sac2: number; // VA - Apparent power on Phase 2
-  Sac3: number; // VA - Apparent power on Phase 3
-  SystemStatus: 'OnGrid' | 'OffGrid' | string; // Grid connection status
-  Timestamp: string; // Local time (e.g. "2020-12-10 11:26:01")
-  USOC: number; // % - User state of charge
-  Uac: number; // V - AC voltage
-  Ubat: number; // V - Battery voltage
-  dischargeNotAllowed: boolean; // True if discharge not allowed
-  generator_autostart: boolean; // True if generator autostart is enabled
+  /**
+   * All AC output of apparent power in VA
+   * Integer
+   */
+  Apparent_output: number;
+
+  /**
+   * Backup-buffer in percentage that is set on the system
+   * Integer
+   */
+  BackupBuffer: number;
+
+  /**
+   * Boolean that indicates the charge status. True if charging
+   * Boolean
+   */
+  BatteryCharging: boolean;
+
+  /**
+   * Boolean that indicates the discharge status. True if discharging
+   * Boolean
+   */
+  BatteryDischarging: boolean;
+
+  /**
+   * House consumption in watts, average over the last 60s
+   * Integer
+   */
+  Consumption_Avg: number;
+
+  /**
+   * House consumption in watts, direct measurement
+   * Integer
+   */
+  Consumption_W: number;
+
+  /**
+   * AC frequency in hertz
+   * Float
+   */
+  Fac: number;
+
+  /**
+   * Boolean that indicates the energy flow at the installation site. True if battery feeds the consumption
+   * Boolean
+   */
+  FlowConsumptionBattery: boolean;
+
+  /**
+   * Boolean that indicates the energy flow at the installation site. True if grid feeds the consumption
+   * Boolean
+   */
+  FlowConsumptionGrid: boolean;
+
+  /**
+   * Boolean that indicates the energy flow at the installation site. True if production feeds the consumption
+   * Boolean
+   */
+  FlowConsumptionProduction: boolean;
+
+  /**
+   * Boolean that indicates the energy flow at the installation site. True if battery is charging from grid
+   * Boolean
+   */
+  FlowGridBattery: boolean;
+
+  /**
+   * Boolean that indicates the energy flow at the installation site. True if production is charging the battery
+   * Boolean
+   */
+  FlowProductionBattery: boolean;
+
+  /**
+   * Boolean that indicates the energy flow at the installation site. True if production feeds into the grid
+   * Boolean
+   */
+  FlowProductionGrid: boolean;
+
+  /**
+   * Grid Feed in watts. Negative is consumption and positive is feed in
+   * Integer
+   */
+  GridFeedIn_W: number;
+
+  /**
+   * System is installed or not
+   * Integer
+   */
+  IsSystemInstalled: number;
+
+  /**
+   * Operating mode that is set on the system: 1: Manual charging or discharging via API; 2: Automatic Self Consumption. Default.
+   * Integer
+   */
+  OperatingMode: number;
+
+  /**
+   * AC Power in watts. Greater than ZERO is discharging, less than ZERO is charging
+   * Signed Integer
+   */
+  Pac_total_W: number;
+
+  /**
+   * PV production in watts
+   * Integer
+   */
+  Production_W: number;
+
+  /**
+   * Relative state of charge in percentage
+   * Integer
+   */
+  RSOC: number;
+
+  /**
+   * Remaining capacity based on RSOC in Wh
+   * Integer
+   */
+  RemainingCapacity_W: number;
+
+  /**
+   * Output of apparent power in VA on Phase 1
+   * Integer
+   */
+  Sac1: number;
+
+  /**
+   * Output of apparent power in VA on Phase 2
+   * Integer
+   */
+  Sac2: number;
+
+  /**
+   * Output of apparent power in VA on Phase 3
+   * Integer
+   */
+  Sac3: number;
+
+  /**
+   * String that indicates if the system is connected to the grid ("OnGrid") or disconnected ("OffGrid")
+   * String
+   */
+  SystemStatus: 'OnGrid' | 'OffGrid' | string;
+
+  /**
+   * Local system time
+   * String
+   */
+  Timestamp: string;
+
+  /**
+   * User state of charge in percentage
+   * Integer
+   */
+  USOC: number;
+
+  /**
+   * AC voltage in volts
+   * Float
+   */
+  Uac: number;
+
+  /**
+   * Battery voltage in volts
+   * Float
+   */
+  Ubat: number;
+
+  /**
+   * Boolean that indicates the discharge status. True if no discharge allowed, based on battery maintenance
+   * Boolean
+   */
+  dischargeNotAllowed: boolean;
+
+  /**
+   * Boolean that indicates the autostart setting of the generator
+   * Boolean
+   */
+  generator_autostart: boolean;
 }

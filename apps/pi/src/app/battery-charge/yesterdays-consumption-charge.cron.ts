@@ -18,11 +18,11 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
   readonly #logger = new Logger(YesterdaysConsumptionBasedBatteryChargeCronJob.name);
 
   constructor(service: SonnenService, event: EventService, chargeService: ChargeService, costService: CostService, schedulerRegistry: SchedulerRegistry) {
-    this.#logger.debug(process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_TIME, process.env.SONNEN_BATTERY_CHARGE_WATTS);
+    this.#logger.debug(process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_WATTS);
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(service.getLatestData());
       const yesterdaysSurplusProduction = await chargeService.getSurplusProduction();
-      const periodBeforeChargeInHours = DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({ day: 1 }), 'hours').hours;
+      const periodBeforeChargeInHours = yesterdaysSurplusProduction ? DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({ day: 1 }), 'hours').hours: 24;
       const getsMoreExpensive = await costService.itGetsMoreExpensive(DateTime.now(), periodBeforeChargeInHours);
       const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({ day: 1 }));
 

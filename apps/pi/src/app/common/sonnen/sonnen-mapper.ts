@@ -1,4 +1,12 @@
-import { BatteryModule, Configuration, LatestData, OperatingMode, OperationMode, Status, SystemStatus } from '@sonnen/data';
+import {
+  BatteryModule,
+  Configuration,
+  LatestData,
+  OperatingMode,
+  OperationMode,
+  Status,
+  SystemStatus,
+} from '@sonnen/data';
 import { DateTime } from 'luxon';
 import { SonnenBatteryModule } from './sonnen-battery-module.model';
 import { SonnenConfiguration } from './sonnen-configuration.model';
@@ -83,12 +91,12 @@ function status(data: SonnenStatus): Status {
 
 export function configuration(data: Partial<SonnenConfiguration>): Partial<Configuration> {
   return {
-    cmMarketingModuleCapacity: data.CM_MarketingModuleCapacity,
+    cmMarketingModuleCapacity: data.CM_MarketingModuleCapacity ? parseInt(data.CM_MarketingModuleCapacity, 10) : undefined,
     cnCascadingRole: data.CN_CascadingRole,
     deSoftware: data.DE_Software,
     emChpMaxSoc: data.EM_CHP_Max_SOC,
     emChpMinSoc: data.EM_CHP_Min_SOC,
-    emOperatingMode: parseInt(data.EM_OperatingMode, 10) as OperationMode,
+    emOperatingMode: data.EM_OperatingMode ? parseInt(data.EM_OperatingMode, 10) as OperationMode : undefined,
     emPrognosisCharging: data.EM_Prognosis_Charging,
     emReEnableMicrogrid: data.EM_RE_ENABLE_MICROGRID,
     emToUSchedule: data.EM_ToU_Schedule,
@@ -97,7 +105,7 @@ export function configuration(data: Partial<SonnenConfiguration>): Partial<Confi
     emUsoc: data.EM_USOC,
     emUsGenratorType: data.EM_US_GENRATOR_TYPE,
     emUsGenPowerSetPoint: data.EM_US_GEN_POWER_SET_POINT,
-    icBatteryModules: data.IC_BatteryModules,
+    icBatteryModules: data.IC_BatteryModules ? parseInt(data.IC_BatteryModules, 10) : undefined,
     icInverterMaxPowerW: data.IC_InverterMaxPower_w,
     nvmPfcFixedCosPhi: data.NVM_PfcFixedCosPhi,
     nvmPfcIsFixedCosPhiActive: data.NVM_PfcIsFixedCosPhiActive,

@@ -45,13 +45,13 @@ export class SonnenService {
   charge(watts = process.env.SONNEN_BATTERY_CHARGE_WATTS) {
     this.chargeStatus.next(true);
     return this.manualMode().pipe(
-      switchMap(() => this.http.post<boolean>(`setpoint/charge/${watts}`)),
+      switchMap(() => this.http.post<boolean>(`setpoint/charge/${ watts }`)),
       map(response => response.data),
       catchError(async error => {
         this.chargeStatus.next(false);
         await this.event.add({
           title: 'Lade problemer',
-          source: `${SonnenService.name}:ChargeError`,
+          source: `${ SonnenService.name }:ChargeError`,
           type: 'error',
           message: error.message,
         });
@@ -79,12 +79,18 @@ export class SonnenService {
     );
   }
 
+  getCapacity(): Observable<number> {
+    return this.#getConfiguration().pipe(
+      map(configuration => configuration.icBatteryModules * configuration.cmMarketingModuleCapacity),
+    );
+  }
+
   manualMode() {
-    return this.#updateConfiguration({EM_OperatingMode: '1'});
+    return this.#updateConfiguration({ EM_OperatingMode: '1' });
   }
 
   automaticMode() {
-    return this.#updateConfiguration({EM_OperatingMode: '2'});
+    return this.#updateConfiguration({ EM_OperatingMode: '2' });
   }
 
   #updateConfiguration(configuration: Partial<SonnenConfiguration>) {

@@ -5,13 +5,14 @@ import { firstValueFrom } from 'rxjs';
 import { CostService, EventService, SonnenService } from '../common';
 import { FirebaseService } from '../firebase';
 import SunCalc from 'suncalc';
+import { ChargeService } from './charge.service';
 
 @Injectable()
 export class AfternoonChargeCronJob {
 
   #logger = new Logger(AfternoonChargeCronJob.name);
 
-  constructor(private sonnenService: SonnenService, private schedulerRegistry: SchedulerRegistry, private costService: CostService, private eventService: EventService, private firebase: FirebaseService) {
+  constructor(private sonnenService: SonnenService, private schedulerRegistry: SchedulerRegistry, private chargeService: ChargeService, private costService: CostService, private eventService: EventService, private firebase: FirebaseService) {
     this.#logger.debug('AfternoonChargeService started');
   }
 
@@ -31,7 +32,7 @@ export class AfternoonChargeCronJob {
     const now = DateTime.now();
 
     const usoc = await firstValueFrom(this.sonnenService.usoc$);
-    const chargeTime = usoc < 75 ? 100 - usoc : 0;
+    const chargeTime = usoc < 75 ? await this.chargeService.getChargeMinutesByUSOC() : 0;
 
     if (chargeTime > 0) {
       const price = (await firstValueFrom(this.costService.getPrices(sunset.minus({ minutes: chargeTime })))).find(price => price.from.hasSame(now, 'hour'));
