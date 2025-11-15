@@ -35,11 +35,12 @@ export class EventService {
 
         this.#logger.warn(`Unable to send to ${ token }. User ${ user?.displayName ?? 'Unknown' }`);
         this.#logger.error(error);
-        if(user) {
+        if (user) {
           const prunedTokens = user.tokens.filter(existingToken => existingToken !== token);
           await this.firebase.db.doc(documentPath.user(user.uid)).update({
-            tokens: prunedTokens
-          })
+            tokens: prunedTokens,
+          });
+          this.#logger.debug(`Removed token ${ token } from user ${ user.displayName }`);
         }
       }
     }
