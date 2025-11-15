@@ -22,7 +22,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(service.getLatestData());
       const yesterdaysSurplusProduction = await chargeService.getSurplusProduction();
-      const periodBeforeChargeInHours = yesterdaysSurplusProduction ? DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({ day: 1 }), 'hours').hours: 24;
+      const periodBeforeChargeInHours = yesterdaysSurplusProduction ? DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({ day: 1 }), 'hours').hours: 1;
       const getsMoreExpensive = await costService.itGetsMoreExpensive(DateTime.now(), periodBeforeChargeInHours);
       const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({ day: 1 }));
 
@@ -73,7 +73,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
           type: 'info',
           data: {
             usoc: status.usoc,
-            usocYesterday: yesterdaysSurplusProduction,
+            usocYesterday: yesterdaysSurplusProduction ?? -1,
             periodBeforeChargeInHours,
             getsMoreExpensive,
           },

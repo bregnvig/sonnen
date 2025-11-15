@@ -40,10 +40,10 @@ export class ChargeService {
   }
 
   async getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(date = DateTime.now().minus({ days: 1 }).startOf('day')) {
-    const productionDay = await this.collection.getProduction(date);
-    const consumptionDay = await this.collection.getAverageConsumption(date);
+    const productionDay = await this.collection.getProduction(date).catch(() => null as ProductionDay);
+    const consumptionDay = await this.collection.getAverageConsumption(date).catch(() => null as AverageConsumptionDay);
 
-    const firstTimeProductionMoreThenConsumption = productionDay.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
+    const firstTimeProductionMoreThenConsumption = productionDay?.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
     if (!firstTimeProductionMoreThenConsumption) {
       return this.getChargeMinutesByUSOC();
     }

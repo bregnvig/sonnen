@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { converter } from '@sonnen/backend/firebase';
-import { collectionPath, SonnenEvent, User } from '@sonnen/data';
+import { collectionPath, documentPath, SonnenEvent, User } from '@sonnen/data';
 import { firestore } from 'firebase-admin';
 import { FirebaseService } from '../../firebase';
 
@@ -32,8 +32,15 @@ export class EventService {
         await this.firebase.sendToToken(token, title, message);
       } catch (error) {
         const user = users.find(u => u.tokens.includes(token));
+
         this.#logger.warn(`Unable to send to ${ token }. User ${ user?.displayName ?? 'Unknown' }`);
         this.#logger.error(error);
+        if(user) {
+          const prunedTokens = user.tokens.filter(existingToken => existingToken !== token);
+          await this.firebase.db.doc(documentPath.user(user.uid)).update({
+            tokens: prunedTokens
+          })
+        }
       }
     }
 
