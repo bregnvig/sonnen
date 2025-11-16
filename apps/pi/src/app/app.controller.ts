@@ -3,7 +3,7 @@ import { requiredValue } from '@sonnen/utils';
 import { DateTime } from 'luxon';
 import { AppService } from './app.service';
 import { ChargeService } from './battery-charge';
-import { CostService } from './common';
+import { CostService, SonnenService } from './common';
 import { FirebaseService } from './firebase';
 import { AfternoonChargeCronJob } from './battery-charge/afternoon-charge.cron';
 
@@ -16,6 +16,7 @@ export class AppController {
     private chargeService: ChargeService,
     afternoonChargeCheck: AfternoonChargeCronJob,
     private readonly costService: CostService,
+    private readonly sonnenService: SonnenService,
     private firebase: FirebaseService) {
     const now = DateTime.now();
     now.hour > 1 && afternoonChargeCheck.planChargeCheck();
@@ -49,6 +50,16 @@ export class AppController {
   async getChargeTime(@Query('date') dateString: string = DateTime.now().toISODate()) {
     const date = DateTime.fromISO(dateString);
     return this.chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(date.isValid ? date : DateTime.now().startOf('day'));
+  }
+
+  @Get('battery-data')
+  async getBatteryData() {
+    return this.sonnenService.getBatteryData();
+  }
+
+  @Get('is-charging')
+  async getChargeStatus() {
+    return this.sonnenService.chargeStatus.value;
   }
 
   @Get('more-expensive')
