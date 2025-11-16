@@ -1,9 +1,15 @@
 import { Routes } from '@angular/router';
-import { EventsComponent } from './events.component';
+import { EventsPage } from './events-page';
+import { PredictionsPage } from './predictions-page';
 
 export const EventsRoutes: Routes = [
   {
     path: '',
-    component: EventsComponent,
+    pathMatch: 'full',
+    component: EventsPage,
+  },
+  {
+    path: 'predictions',
+    component: PredictionsPage,
   },
 ];
