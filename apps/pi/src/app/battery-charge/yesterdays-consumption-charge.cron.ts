@@ -36,7 +36,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
           data: {
             usoc: status.usoc,
             chargeTime: minuttes,
-            yesterdaysSurplusProduction,
+            yesterdaysSurplusProduction: yesterdaysSurplusProduction ?? -1,
             periodBeforeChargeInHours,
             getsMoreExpensive,
           },
@@ -86,7 +86,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
           type: 'info',
           data: {
             usoc: status.usoc,
-            usocYesterday: yesterdaysSurplusProduction,
+            usocYesterday: yesterdaysSurplusProduction ?? -1,
           },
         } as SonnenEvent);
       }

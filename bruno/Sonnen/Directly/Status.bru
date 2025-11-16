@@ -1,11 +1,11 @@
 meta {
-  name: Charge
+  name: Status
   type: http
-  seq: 4
+  seq: 2
 }
 
-post {
-  url: http://192.168.86.31:80/api/v2/setpoint/charge/0
+get {
+  url: http://192.168.86.31/api/v2/status
   body: none
   auth: none
 }
