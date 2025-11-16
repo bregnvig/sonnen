@@ -1,0 +1,11 @@
+meta {
+  name: Get current mode
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{host}}/api/is-charging
+  body: none
+  auth: inherit
+}
