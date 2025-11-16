@@ -53,6 +53,680 @@ export interface CalculationsCostCreatePayload {
   }[];
 }
 
+export interface CalculationsCostCreateData {
+  /**
+   * The price area used for the calculation.
+   * @example "DK1"
+   */
+  priceArea?: string;
+  consumption?: {
+    /**
+     * Total electricity consumption.
+     * @example 2.1
+     */
+    value?: number;
+    /**
+     * Unit of consumption.
+     * @example "kWh"
+     */
+    unit?: string;
+  };
+  cost?: {
+    /**
+     * Total electricity cost without VAT.
+     * @example 3.476035
+     */
+    value?: number;
+    /**
+     * VAT applied to the cost.
+     * @example 0.869009
+     */
+    vat?: number;
+    /**
+     * Total electricity cost including VAT.
+     * @example 4.345044
+     */
+    total?: number;
+    /**
+     * Unit of cost.
+     * @example "kr"
+     */
+    unit?: string;
+  };
+  averagePrice?: {
+    /**
+     * Average price per kWh without VAT.
+     * @example 1.655255
+     */
+    value?: number;
+    /**
+     * VAT applied to the average price.
+     * @example 0.413814
+     */
+    vat?: number;
+    /**
+     * Average price per kWh including VAT.
+     * @example 2.069069
+     */
+    total?: number;
+    /**
+     * Unit of average price.
+     * @example "kr/kWh"
+     */
+    unit?: string;
+  };
+  /** Detailed breakdown of consumption and price for each entry. */
+  details?: {
+    /**
+     * Date and time of the consumption.
+     * @format date-time
+     * @example "2024-08-27T18:00:00.000Z"
+     */
+    date?: string;
+    amount?: {
+      /**
+       * Amount of electricity consumed (kWh).
+       * @example 1
+       */
+      value?: number;
+      /**
+       * Unit of consumption.
+       * @example "kWh"
+       */
+      unit?: string;
+    };
+    prices?: {
+      electricity?: {
+        /**
+         * Electricity price (per kWh).
+         * @example 0.22254
+         */
+        value?: number;
+        /**
+         * VAT applied to the electricity price.
+         * @example 0.055635
+         */
+        vat?: number;
+        /**
+         * Total electricity price including VAT.
+         * @example 0.278175
+         */
+        total?: number;
+        /**
+         * Unit of electricity price.
+         * @example "kr/kWh"
+         */
+        unit?: string;
+      };
+      surcharge?: {
+        /**
+         * Surcharge price.
+         * @example 0
+         */
+        value?: number;
+        /**
+         * VAT applied to surcharge.
+         * @example 0
+         */
+        vat?: number;
+        /**
+         * Total surcharge including VAT.
+         * @example 0
+         */
+        total?: number;
+        /**
+         * Unit of surcharge price.
+         * @example "kr/kWh"
+         */
+        unit?: string;
+      };
+      electricityTax?: {
+        /**
+         * Electricity tax per kWh.
+         * @example 0.761
+         */
+        value?: number;
+        /**
+         * VAT applied to the electricity tax.
+         * @example 0.19025
+         */
+        vat?: number;
+        /**
+         * Total electricity tax including VAT.
+         * @example 0.95125
+         */
+        total?: number;
+        /**
+         * Unit of electricity tax.
+         * @example "kr/kWh"
+         */
+        unit?: string;
+      };
+      transmission?: {
+        systemTariff?: {
+          /**
+           * System tariff.
+           * @example 0.051
+           */
+          value?: number;
+          /**
+           * VAT applied to system tariff.
+           * @example 0.01275
+           */
+          vat?: number;
+          /**
+           * Total system tariff including VAT.
+           * @example 0.06375
+           */
+          total?: number;
+          /**
+           * Unit of system tariff.
+           * @example "kr/kWh"
+           */
+          unit?: string;
+        };
+        netTariff?: {
+          /**
+           * Net tariff.
+           * @example 0.074
+           */
+          value?: number;
+          /**
+           * VAT applied to net tariff.
+           * @example 0.0185
+           */
+          vat?: number;
+          /**
+           * Total net tariff including VAT.
+           * @example 0.0925
+           */
+          total?: number;
+          /**
+           * Unit of net tariff.
+           * @example "kr/kWh"
+           */
+          unit?: string;
+        };
+      };
+      distribution?: {
+        /**
+         * Distribution cost per kWh.
+         * @example 0.4464
+         */
+        value?: number;
+        /**
+         * VAT applied to distribution cost.
+         * @example 0.1116
+         */
+        vat?: number;
+        /**
+         * Total distribution cost including VAT.
+         * @example 0.558
+         */
+        total?: number;
+        /**
+         * Unit of distribution cost.
+         * @example "kr/kWh"
+         */
+        unit?: string;
+      };
+    };
+    cost?: {
+      /**
+       * Total cost for the specific consumption period.
+       * @example 1.55494
+       */
+      value?: number;
+      /**
+       * VAT applied to the cost.
+       * @example 0.388735
+       */
+      vat?: number;
+      /**
+       * Total cost including VAT.
+       * @example 1.943675
+       */
+      total?: number;
+      /**
+       * Unit of cost.
+       * @example "kr"
+       */
+      unit?: string;
+    };
+  }[];
+}
+
+export type CompaniesListData = {
+  /**
+   * The name of the company.
+   * @example "LOOAD"
+   */
+  name?: string;
+  /** List of products the company offers. */
+  products?: {
+    /**
+     * The product name.
+     * @example "Standard"
+     */
+    name?: string;
+    /**
+     * Calculated consumption cost.
+     * @example 1200
+     */
+    consumptionCost?: number;
+    /**
+     * Calculated fee cost.
+     * @example 150
+     */
+    feeCost?: number;
+    /**
+     * Total calculated cost.
+     * @example 1350
+     */
+    totalCost?: number;
+    /**
+     * Monthly subscription price.
+     * @example 50
+     */
+    subscriptionMonthly?: number;
+    /**
+     * Monthly fees.
+     * @example 10
+     */
+    feesMonthly?: number;
+    /**
+     * Consumption surcharge price.
+     * @example 5
+     */
+    consumptionSurcharge?: number;
+    /**
+     * Fixed price component.
+     * @example 100
+     */
+    fixedPrice?: number;
+    /**
+     * One-time creation fee.
+     * @example 200
+     */
+    creationFee?: number;
+  }[];
+}[];
+
+export type CompaniesFindListData = {
+  /**
+   * The name of the company.
+   * @example "LOOAD"
+   */
+  name?: string;
+  /** List of products the company offers. */
+  products?: {
+    /**
+     * The product name.
+     * @example "Standard"
+     */
+    name?: string;
+    /**
+     * Calculated consumption cost.
+     * @example 1200
+     */
+    consumptionCost?: number;
+    /**
+     * Calculated fee cost.
+     * @example 150
+     */
+    feeCost?: number;
+    /**
+     * Total calculated cost.
+     * @example 1350
+     */
+    totalCost?: number;
+    /**
+     * Monthly subscription price.
+     * @example 50
+     */
+    subscriptionMonthly?: number;
+    /**
+     * Monthly fees.
+     * @example 10
+     */
+    feesMonthly?: number;
+    /**
+     * Consumption surcharge price.
+     * @example 5
+     */
+    consumptionSurcharge?: number;
+    /**
+     * Fixed price component.
+     * @example 100
+     */
+    fixedPrice?: number;
+    /**
+     * One-time creation fee.
+     * @example 200
+     */
+    creationFee?: number;
+  }[];
+}[];
+
+export type FactorsListData = {
+  /**
+   * Unique identifier for the factor.
+   * @example "6495bd67431cf1de8e86c3c9"
+   */
+  _id?: string;
+  /**
+   * Short name for the factor.
+   * @example "Skjulte udgifter"
+   */
+  shortName?: string;
+  /**
+   * Full name of the factor.
+   * @example "Lægger skjulte udgifter på elregningerne"
+   */
+  name?: string;
+  /**
+   * Description of how the factor affects the rating.
+   * @example "Elselskabet har skjulte udgifter på elregningerne, som bliver fundet, når vi gennemgår elregninger for elforbrugere."
+   */
+  description?: string;
+  /**
+   * The numeric value of the factor, where negative values indicate a negative impact and positive values indicate a positive impact.
+   * @example -100
+   */
+  ratingFactor?: number;
+}[];
+
+export interface ForecastsListData {
+  /** @format date-time */
+  generatedAt?: string;
+  /** @format date-time */
+  start?: string;
+  /** @format date-time */
+  end?: string;
+  model?: string;
+  /** @example "DK2" */
+  priceArea?: string;
+  prices?: {
+    /** @format date-time */
+    datetime?: string;
+    price?: number;
+  }[];
+  tag?: string;
+}
+
+export interface PricesNowListData {
+  /** Price area used to resolve the price. */
+  priceArea?: string;
+  supplier?: {
+    id?: string;
+    name?: string;
+    customerGroup?: {
+      id?: string;
+      name?: string;
+      description?: string;
+    } | null;
+  };
+  company?: {
+    id?: string;
+    name?: string;
+    product?: {
+      id?: string;
+      name?: string;
+      productType?: string;
+    } | null;
+  };
+  price?: {
+    /** @format date-time */
+    date?: string;
+    price?: {
+      value?: number;
+      vat?: number;
+      total?: number;
+      /** @example "kr/kWh" */
+      unit?: string;
+    };
+    forecast?: boolean;
+    /** @example "1h" */
+    resolution?: string;
+    details?: {
+      electricity?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        unit?: string;
+      };
+      surcharge?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        unit?: string;
+      } | null;
+      transmission?: {
+        systemTariff?: {
+          value?: number;
+          vat?: number;
+          total?: number;
+          unit?: string;
+        };
+        netTariff?: {
+          value?: number;
+          vat?: number;
+          total?: number;
+          unit?: string;
+        };
+      };
+      electricityTax?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        unit?: string;
+      };
+      distribution?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        unit?: string;
+      } | null;
+    };
+  };
+}
+
+export interface PricesListData {
+  /**
+   * Price area of the electricity.
+   * @example "DK1"
+   */
+  priceArea?: string;
+  prices?: {
+    /**
+     * Date and time of the price entry.
+     * @format date-time
+     */
+    date?: string;
+    price?: {
+      value?: number;
+      vat?: number;
+      total?: number;
+      /** @example "kr/kWh" */
+      unit?: string;
+    };
+    /** True if the entry is forecasted (undefined if not forecasted) */
+    forecast?: boolean;
+    /**
+     * The resolution of the price entry (e.g., "15m", "1h").
+     * @example "1h"
+     */
+    resolution?: string;
+    details?: {
+      electricity?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        /** @example "kr/kWh" */
+        unit?: string;
+      };
+      surcharge?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        /** @example "kr/kWh" */
+        unit?: string;
+      };
+      transmission?: {
+        systemTariff?: {
+          value?: number;
+          vat?: number;
+          total?: number;
+          /** @example "kr/kWh" */
+          unit?: string;
+        };
+        netTariff?: {
+          value?: number;
+          vat?: number;
+          total?: number;
+          /** @example "kr/kWh" */
+          unit?: string;
+        };
+      };
+      electricityTax?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        /** @example "kr/kWh" */
+        unit?: string;
+      };
+      distribution?: {
+        value?: number;
+        vat?: number;
+        total?: number;
+        /** @example "kr/kWh" */
+        unit?: string;
+      };
+    };
+  }[];
+}
+
+export type SuppliersListData = {
+  /**
+   * The supplier ID.
+   * @example "radius_c"
+   */
+  id?: string;
+  /**
+   * The name of the supplier.
+   * @example "Radius C"
+   */
+  name?: string;
+  /**
+   * The company name of the supplier.
+   * @example "Radius Elnet A/S"
+   */
+  companyName?: string;
+  /**
+   * The price area of the supplier.
+   * @example "DK1"
+   */
+  priceArea?: string;
+  customerGroups?: {
+    /**
+     * The customer group ID.
+     * @example "c"
+     */
+    id?: string;
+    /**
+     * Whether the customer group is the default group.
+     * @example true
+     */
+    default?: boolean;
+    /**
+     * The name of the customer group.
+     * @example "C"
+     */
+    name?: string;
+    /**
+     * The description of the customer group.
+     * @example "Privatkunder og mindre erhvervskunder"
+     */
+    description?: string;
+  }[];
+}[];
+
+export type SuppliersFindListData = {
+  /**
+   * The supplier ID.
+   * @example "radius_c"
+   */
+  id?: string;
+  /**
+   * The name of the supplier.
+   * @example "Radius C"
+   */
+  name?: string;
+  /**
+   * The company name of the supplier.
+   * @example "Radius Elnet A/S"
+   */
+  companyName?: string;
+  /**
+   * The price area of the supplier.
+   * @example "DK1"
+   */
+  priceArea?: string;
+}[];
+
+export type SuppliersAreasListData = {
+  /**
+   * The geometry of the coverage area.
+   * @example {"type":"Polygon","coordinates":[[[12.5683,55.6761],[12.5683,55.6761],[12.5683,55.6761],[12.5683,55.6761]]]}
+   */
+  geometry?: object;
+  supplierId?: {
+    /**
+     * The supplier ID.
+     * @example "radius_c"
+     */
+    id?: string;
+    /**
+     * The name of the supplier.
+     * @example "Radius C"
+     */
+    name?: string;
+    /**
+     * The company name of the supplier.
+     * @example "Radius Elnet A/S"
+     */
+    companyName?: string;
+    /**
+     * The price area of the supplier.
+     * @example "DK1"
+     */
+    priceArea?: string;
+  };
+}[];
+
+export interface WebhooksMetadataListData {
+  resources?: string[];
+}
+
+export type WebhooksListData = {
+  /** The unique identifier for the webhook. */
+  _id?: string;
+  /** The resources for which the webhook listens. */
+  resources?: string[];
+  /**
+   * The URL to which webhook notifications are sent.
+   * @format uri
+   */
+  callbackUrl?: string;
+  /**
+   * The creation timestamp of the webhook.
+   * @format date-time
+   */
+  createdAt?: string;
+  /** Whether the webhook is active or not. */
+  active?: boolean;
+}[];
+
 export interface WebhooksCreatePayload {
   /**
    * The resources the webhook subscribes to.
@@ -66,6 +740,70 @@ export interface WebhooksCreatePayload {
    */
   callbackUrl: string;
 }
+
+export interface WebhooksCreateData {
+  /**
+   * The unique identifier for the webhook.
+   * @example "64fb3f5e2c3d4c001f9a84ef"
+   */
+  _id?: string;
+  /**
+   * The resources the webhook listens to.
+   * @example ["PRICES","COMPANIES"]
+   */
+  resources?: string[];
+  /**
+   * The URL to which webhook notifications are sent.
+   * @format uri
+   * @example "https://example.com/webhook"
+   */
+  callbackUrl?: string;
+  /**
+   * The creation timestamp of the webhook.
+   * @format date-time
+   * @example "2024-11-29T12:00:00.000Z"
+   */
+  createdAt?: string;
+  /**
+   * Whether the webhook is active.
+   * @example true
+   */
+  active?: boolean;
+}
+
+export interface WebhooksDetailData {
+  /** The unique identifier for the webhook. */
+  _id?: string;
+  /** The resources for which the webhook listens. */
+  resources?: string[];
+  /**
+   * The URL to which webhook notifications are sent.
+   * @format uri
+   */
+  callbackUrl?: string;
+  /**
+   * The creation timestamp of the webhook.
+   * @format date-time
+   */
+  createdAt?: string;
+  /** Whether the webhook is active or not. */
+  active?: boolean;
+}
+
+export interface WebhooksDeleteData {
+  /** @example "Webhook successfully deleted." */
+  message?: string;
+}
+
+export type WebhooksLogsListData = {
+  /**
+   * The log entry timestamp.
+   * @format date-time
+   */
+  timestamp?: string;
+  /** The log entry message. */
+  message?: string;
+}[];
 
 export interface SchedulingOptimizeCreatePayload {
   /**
@@ -154,6 +892,34 @@ export interface SchedulingOptimizeCreatePayload {
         reward: number;
       }[]
     | null;
+}
+
+export interface SchedulingOptimizeCreateData {
+  /** Execution time in seconds. */
+  execution_time?: number;
+  /** Number of generations in the optimization process. */
+  generations?: number;
+  /** The final fitness score of the optimization. */
+  fitness?: number;
+  /** The average electricity price in the optimized schedule. */
+  avg_price?: number;
+  /** Whether the schedule was overconstrained. */
+  overconstrained?: boolean;
+  /** List of any problems encountered during scheduling. */
+  problems?: string[];
+  /** The scheduled entities and their states over time. */
+  entities?: {
+    /** The name of the entity. */
+    name?: string;
+    /** The type of the entity (e.g., "battery" or "comfort"). */
+    type?: string;
+    schedule?: {
+      /** The operational state of the entity. */
+      state?: string;
+      /** The charge level (for batteries) or comfort level. */
+      level?: number;
+    }[];
+  }[];
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -563,251 +1329,7 @@ export class Api<
       data: CalculationsCostCreatePayload,
       params: RequestParams = {},
     ) =>
-      this.request<
-        {
-          /**
-           * The price area used for the calculation.
-           * @example "DK1"
-           */
-          priceArea?: string;
-          consumption?: {
-            /**
-             * Total electricity consumption.
-             * @example 2.1
-             */
-            value?: number;
-            /**
-             * Unit of consumption.
-             * @example "kWh"
-             */
-            unit?: string;
-          };
-          cost?: {
-            /**
-             * Total electricity cost without VAT.
-             * @example 3.476035
-             */
-            value?: number;
-            /**
-             * VAT applied to the cost.
-             * @example 0.869009
-             */
-            vat?: number;
-            /**
-             * Total electricity cost including VAT.
-             * @example 4.345044
-             */
-            total?: number;
-            /**
-             * Unit of cost.
-             * @example "kr"
-             */
-            unit?: string;
-          };
-          averagePrice?: {
-            /**
-             * Average price per kWh without VAT.
-             * @example 1.655255
-             */
-            value?: number;
-            /**
-             * VAT applied to the average price.
-             * @example 0.413814
-             */
-            vat?: number;
-            /**
-             * Average price per kWh including VAT.
-             * @example 2.069069
-             */
-            total?: number;
-            /**
-             * Unit of average price.
-             * @example "kr/kWh"
-             */
-            unit?: string;
-          };
-          /** Detailed breakdown of consumption and price for each entry. */
-          details?: {
-            /**
-             * Date and time of the consumption.
-             * @format date-time
-             * @example "2024-08-27T18:00:00.000Z"
-             */
-            date?: string;
-            amount?: {
-              /**
-               * Amount of electricity consumed (kWh).
-               * @example 1
-               */
-              value?: number;
-              /**
-               * Unit of consumption.
-               * @example "kWh"
-               */
-              unit?: string;
-            };
-            prices?: {
-              electricity?: {
-                /**
-                 * Electricity price (per kWh).
-                 * @example 0.22254
-                 */
-                value?: number;
-                /**
-                 * VAT applied to the electricity price.
-                 * @example 0.055635
-                 */
-                vat?: number;
-                /**
-                 * Total electricity price including VAT.
-                 * @example 0.278175
-                 */
-                total?: number;
-                /**
-                 * Unit of electricity price.
-                 * @example "kr/kWh"
-                 */
-                unit?: string;
-              };
-              surcharge?: {
-                /**
-                 * Surcharge price.
-                 * @example 0
-                 */
-                value?: number;
-                /**
-                 * VAT applied to surcharge.
-                 * @example 0
-                 */
-                vat?: number;
-                /**
-                 * Total surcharge including VAT.
-                 * @example 0
-                 */
-                total?: number;
-                /**
-                 * Unit of surcharge price.
-                 * @example "kr/kWh"
-                 */
-                unit?: string;
-              };
-              electricityTax?: {
-                /**
-                 * Electricity tax per kWh.
-                 * @example 0.761
-                 */
-                value?: number;
-                /**
-                 * VAT applied to the electricity tax.
-                 * @example 0.19025
-                 */
-                vat?: number;
-                /**
-                 * Total electricity tax including VAT.
-                 * @example 0.95125
-                 */
-                total?: number;
-                /**
-                 * Unit of electricity tax.
-                 * @example "kr/kWh"
-                 */
-                unit?: string;
-              };
-              transmission?: {
-                systemTariff?: {
-                  /**
-                   * System tariff.
-                   * @example 0.051
-                   */
-                  value?: number;
-                  /**
-                   * VAT applied to system tariff.
-                   * @example 0.01275
-                   */
-                  vat?: number;
-                  /**
-                   * Total system tariff including VAT.
-                   * @example 0.06375
-                   */
-                  total?: number;
-                  /**
-                   * Unit of system tariff.
-                   * @example "kr/kWh"
-                   */
-                  unit?: string;
-                };
-                netTariff?: {
-                  /**
-                   * Net tariff.
-                   * @example 0.074
-                   */
-                  value?: number;
-                  /**
-                   * VAT applied to net tariff.
-                   * @example 0.0185
-                   */
-                  vat?: number;
-                  /**
-                   * Total net tariff including VAT.
-                   * @example 0.0925
-                   */
-                  total?: number;
-                  /**
-                   * Unit of net tariff.
-                   * @example "kr/kWh"
-                   */
-                  unit?: string;
-                };
-              };
-              distribution?: {
-                /**
-                 * Distribution cost per kWh.
-                 * @example 0.4464
-                 */
-                value?: number;
-                /**
-                 * VAT applied to distribution cost.
-                 * @example 0.1116
-                 */
-                vat?: number;
-                /**
-                 * Total distribution cost including VAT.
-                 * @example 0.558
-                 */
-                total?: number;
-                /**
-                 * Unit of distribution cost.
-                 * @example "kr/kWh"
-                 */
-                unit?: string;
-              };
-            };
-            cost?: {
-              /**
-               * Total cost for the specific consumption period.
-               * @example 1.55494
-               */
-              value?: number;
-              /**
-               * VAT applied to the cost.
-               * @example 0.388735
-               */
-              vat?: number;
-              /**
-               * Total cost including VAT.
-               * @example 1.943675
-               */
-              total?: number;
-              /**
-               * Unit of cost.
-               * @example "kr"
-               */
-              unit?: string;
-            };
-          }[];
-        },
-        void
-      >({
+      this.request<CalculationsCostCreateData, void>({
         path: `/api/calculations/cost`,
         method: "POST",
         body: data,
@@ -846,64 +1368,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        {
-          /**
-           * The name of the company.
-           * @example "LOOAD"
-           */
-          name?: string;
-          /** List of products the company offers. */
-          products?: {
-            /**
-             * The product name.
-             * @example "Standard"
-             */
-            name?: string;
-            /**
-             * Calculated consumption cost.
-             * @example 1200
-             */
-            consumptionCost?: number;
-            /**
-             * Calculated fee cost.
-             * @example 150
-             */
-            feeCost?: number;
-            /**
-             * Total calculated cost.
-             * @example 1350
-             */
-            totalCost?: number;
-            /**
-             * Monthly subscription price.
-             * @example 50
-             */
-            subscriptionMonthly?: number;
-            /**
-             * Monthly fees.
-             * @example 10
-             */
-            feesMonthly?: number;
-            /**
-             * Consumption surcharge price.
-             * @example 5
-             */
-            consumptionSurcharge?: number;
-            /**
-             * Fixed price component.
-             * @example 100
-             */
-            fixedPrice?: number;
-            /**
-             * One-time creation fee.
-             * @example 200
-             */
-            creationFee?: number;
-          }[];
-        }[],
-        void
-      >({
+      this.request<CompaniesListData, void>({
         path: `/api/companies`,
         method: "GET",
         query: query,
@@ -966,64 +1431,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        {
-          /**
-           * The name of the company.
-           * @example "LOOAD"
-           */
-          name?: string;
-          /** List of products the company offers. */
-          products?: {
-            /**
-             * The product name.
-             * @example "Standard"
-             */
-            name?: string;
-            /**
-             * Calculated consumption cost.
-             * @example 1200
-             */
-            consumptionCost?: number;
-            /**
-             * Calculated fee cost.
-             * @example 150
-             */
-            feeCost?: number;
-            /**
-             * Total calculated cost.
-             * @example 1350
-             */
-            totalCost?: number;
-            /**
-             * Monthly subscription price.
-             * @example 50
-             */
-            subscriptionMonthly?: number;
-            /**
-             * Monthly fees.
-             * @example 10
-             */
-            feesMonthly?: number;
-            /**
-             * Consumption surcharge price.
-             * @example 5
-             */
-            consumptionSurcharge?: number;
-            /**
-             * Fixed price component.
-             * @example 100
-             */
-            fixedPrice?: number;
-            /**
-             * One-time creation fee.
-             * @example 200
-             */
-            creationFee?: number;
-          }[];
-        }[],
-        void
-      >({
+      this.request<CompaniesFindListData, void>({
         path: `/api/companies/find`,
         method: "GET",
         query: query,
@@ -1042,36 +1450,7 @@ export class Api<
      * @secure
      */
     factorsList: (params: RequestParams = {}) =>
-      this.request<
-        {
-          /**
-           * Unique identifier for the factor.
-           * @example "6495bd67431cf1de8e86c3c9"
-           */
-          _id?: string;
-          /**
-           * Short name for the factor.
-           * @example "Skjulte udgifter"
-           */
-          shortName?: string;
-          /**
-           * Full name of the factor.
-           * @example "Lægger skjulte udgifter på elregningerne"
-           */
-          name?: string;
-          /**
-           * Description of how the factor affects the rating.
-           * @example "Elselskabet har skjulte udgifter på elregningerne, som bliver fundet, når vi gennemgår elregninger for elforbrugere."
-           */
-          description?: string;
-          /**
-           * The numeric value of the factor, where negative values indicate a negative impact and positive values indicate a positive impact.
-           * @example -100
-           */
-          ratingFactor?: number;
-        }[],
-        void
-      >({
+      this.request<FactorsListData, void>({
         path: `/api/factors`,
         method: "GET",
         secure: true,
@@ -1098,26 +1477,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        {
-          /** @format date-time */
-          generatedAt?: string;
-          /** @format date-time */
-          start?: string;
-          /** @format date-time */
-          end?: string;
-          model?: string;
-          /** @example "DK2" */
-          priceArea?: string;
-          prices?: {
-            /** @format date-time */
-            datetime?: string;
-            price?: number;
-          }[];
-          tag?: string;
-        },
-        void
-      >({
+      this.request<ForecastsListData, void>({
         path: `/api/forecasts`,
         method: "GET",
         query: query,
@@ -1167,85 +1527,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        {
-          /** Price area used to resolve the price. */
-          priceArea?: string;
-          supplier?: {
-            id?: string;
-            name?: string;
-            customerGroup?: {
-              id?: string;
-              name?: string;
-              description?: string;
-            } | null;
-          };
-          company?: {
-            id?: string;
-            name?: string;
-            product?: {
-              id?: string;
-              name?: string;
-              productType?: string;
-            } | null;
-          };
-          price?: {
-            /** @format date-time */
-            date?: string;
-            price?: {
-              value?: number;
-              vat?: number;
-              total?: number;
-              /** @example "kr/kWh" */
-              unit?: string;
-            };
-            forecast?: boolean;
-            /** @example "1h" */
-            resolution?: string;
-            details?: {
-              electricity?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                unit?: string;
-              };
-              surcharge?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                unit?: string;
-              } | null;
-              transmission?: {
-                systemTariff?: {
-                  value?: number;
-                  vat?: number;
-                  total?: number;
-                  unit?: string;
-                };
-                netTariff?: {
-                  value?: number;
-                  vat?: number;
-                  total?: number;
-                  unit?: string;
-                };
-              };
-              electricityTax?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                unit?: string;
-              };
-              distribution?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                unit?: string;
-              } | null;
-            };
-          };
-        },
-        void
-      >({
+      this.request<PricesNowListData, void>({
         path: `/api/prices/now`,
         method: "GET",
         query: query,
@@ -1308,83 +1590,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        {
-          /**
-           * Price area of the electricity.
-           * @example "DK1"
-           */
-          priceArea?: string;
-          prices?: {
-            /**
-             * Date and time of the price entry.
-             * @format date-time
-             */
-            date?: string;
-            price?: {
-              value?: number;
-              vat?: number;
-              total?: number;
-              /** @example "kr/kWh" */
-              unit?: string;
-            };
-            /** True if the entry is forecasted (undefined if not forecasted) */
-            forecast?: boolean;
-            /**
-             * The resolution of the price entry (e.g., "15m", "1h").
-             * @example "1h"
-             */
-            resolution?: string;
-            details?: {
-              electricity?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                /** @example "kr/kWh" */
-                unit?: string;
-              };
-              surcharge?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                /** @example "kr/kWh" */
-                unit?: string;
-              };
-              transmission?: {
-                systemTariff?: {
-                  value?: number;
-                  vat?: number;
-                  total?: number;
-                  /** @example "kr/kWh" */
-                  unit?: string;
-                };
-                netTariff?: {
-                  value?: number;
-                  vat?: number;
-                  total?: number;
-                  /** @example "kr/kWh" */
-                  unit?: string;
-                };
-              };
-              electricityTax?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                /** @example "kr/kWh" */
-                unit?: string;
-              };
-              distribution?: {
-                value?: number;
-                vat?: number;
-                total?: number;
-                /** @example "kr/kWh" */
-                unit?: string;
-              };
-            };
-          }[];
-        },
-        void
-      >({
+      this.request<PricesListData, void>({
         path: `/api/prices`,
         method: "GET",
         query: query,
@@ -1403,53 +1609,7 @@ export class Api<
      * @secure
      */
     suppliersList: (params: RequestParams = {}) =>
-      this.request<
-        {
-          /**
-           * The supplier ID.
-           * @example "radius_c"
-           */
-          id?: string;
-          /**
-           * The name of the supplier.
-           * @example "Radius C"
-           */
-          name?: string;
-          /**
-           * The company name of the supplier.
-           * @example "Radius Elnet A/S"
-           */
-          companyName?: string;
-          /**
-           * The price area of the supplier.
-           * @example "DK1"
-           */
-          priceArea?: string;
-          customerGroups?: {
-            /**
-             * The customer group ID.
-             * @example "c"
-             */
-            id?: string;
-            /**
-             * Whether the customer group is the default group.
-             * @example true
-             */
-            default?: boolean;
-            /**
-             * The name of the customer group.
-             * @example "C"
-             */
-            name?: string;
-            /**
-             * The description of the customer group.
-             * @example "Privatkunder og mindre erhvervskunder"
-             */
-            description?: string;
-          }[];
-        }[],
-        void
-      >({
+      this.request<SuppliersListData, void>({
         path: `/api/suppliers`,
         method: "GET",
         secure: true,
@@ -1486,31 +1646,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<
-        {
-          /**
-           * The supplier ID.
-           * @example "radius_c"
-           */
-          id?: string;
-          /**
-           * The name of the supplier.
-           * @example "Radius C"
-           */
-          name?: string;
-          /**
-           * The company name of the supplier.
-           * @example "Radius Elnet A/S"
-           */
-          companyName?: string;
-          /**
-           * The price area of the supplier.
-           * @example "DK1"
-           */
-          priceArea?: string;
-        }[],
-        void
-      >({
+      this.request<SuppliersFindListData, void>({
         path: `/api/suppliers/find`,
         method: "GET",
         query: query,
@@ -1529,38 +1665,7 @@ export class Api<
      * @secure
      */
     suppliersAreasList: (params: RequestParams = {}) =>
-      this.request<
-        {
-          /**
-           * The geometry of the coverage area.
-           * @example {"type":"Polygon","coordinates":[[[12.5683,55.6761],[12.5683,55.6761],[12.5683,55.6761],[12.5683,55.6761]]]}
-           */
-          geometry?: object;
-          supplierId?: {
-            /**
-             * The supplier ID.
-             * @example "radius_c"
-             */
-            id?: string;
-            /**
-             * The name of the supplier.
-             * @example "Radius C"
-             */
-            name?: string;
-            /**
-             * The company name of the supplier.
-             * @example "Radius Elnet A/S"
-             */
-            companyName?: string;
-            /**
-             * The price area of the supplier.
-             * @example "DK1"
-             */
-            priceArea?: string;
-          };
-        }[],
-        void
-      >({
+      this.request<SuppliersAreasListData, void>({
         path: `/api/suppliers/areas`,
         method: "GET",
         secure: true,
@@ -1578,12 +1683,7 @@ export class Api<
      * @secure
      */
     webhooksMetadataList: (params: RequestParams = {}) =>
-      this.request<
-        {
-          resources?: string[];
-        },
-        void
-      >({
+      this.request<WebhooksMetadataListData, void>({
         path: `/api/webhooks/metadata`,
         method: "GET",
         secure: true,
@@ -1601,27 +1701,7 @@ export class Api<
      * @secure
      */
     webhooksList: (params: RequestParams = {}) =>
-      this.request<
-        {
-          /** The unique identifier for the webhook. */
-          _id?: string;
-          /** The resources for which the webhook listens. */
-          resources?: string[];
-          /**
-           * The URL to which webhook notifications are sent.
-           * @format uri
-           */
-          callbackUrl?: string;
-          /**
-           * The creation timestamp of the webhook.
-           * @format date-time
-           */
-          createdAt?: string;
-          /** Whether the webhook is active or not. */
-          active?: boolean;
-        }[],
-        void
-      >({
+      this.request<WebhooksListData, void>({
         path: `/api/webhooks`,
         method: "GET",
         secure: true,
@@ -1640,35 +1720,7 @@ export class Api<
      */
     webhooksCreate: (data: WebhooksCreatePayload, params: RequestParams = {}) =>
       this.request<
-        {
-          /**
-           * The unique identifier for the webhook.
-           * @example "64fb3f5e2c3d4c001f9a84ef"
-           */
-          _id?: string;
-          /**
-           * The resources the webhook listens to.
-           * @example ["PRICES","COMPANIES"]
-           */
-          resources?: string[];
-          /**
-           * The URL to which webhook notifications are sent.
-           * @format uri
-           * @example "https://example.com/webhook"
-           */
-          callbackUrl?: string;
-          /**
-           * The creation timestamp of the webhook.
-           * @format date-time
-           * @example "2024-11-29T12:00:00.000Z"
-           */
-          createdAt?: string;
-          /**
-           * Whether the webhook is active.
-           * @example true
-           */
-          active?: boolean;
-        },
+        WebhooksCreateData,
         | {
             /** @example "Invalid resources. Allowed values are: PRICES, COMPANIES, SUPPLIERS, FACTORS" */
             error?: string;
@@ -1703,27 +1755,7 @@ export class Api<
      * @secure
      */
     webhooksDetail: (id: string, params: RequestParams = {}) =>
-      this.request<
-        {
-          /** The unique identifier for the webhook. */
-          _id?: string;
-          /** The resources for which the webhook listens. */
-          resources?: string[];
-          /**
-           * The URL to which webhook notifications are sent.
-           * @format uri
-           */
-          callbackUrl?: string;
-          /**
-           * The creation timestamp of the webhook.
-           * @format date-time
-           */
-          createdAt?: string;
-          /** Whether the webhook is active or not. */
-          active?: boolean;
-        },
-        void
-      >({
+      this.request<WebhooksDetailData, void>({
         path: `/api/webhooks/${id}`,
         method: "GET",
         secure: true,
@@ -1742,10 +1774,7 @@ export class Api<
      */
     webhooksDelete: (id: string, params: RequestParams = {}) =>
       this.request<
-        {
-          /** @example "Webhook successfully deleted." */
-          message?: string;
-        },
+        WebhooksDeleteData,
         | {
             /** @example "Unauthorized: Missing or invalid API key" */
             error?: string;
@@ -1778,18 +1807,7 @@ export class Api<
      * @secure
      */
     webhooksLogsList: (id: string, params: RequestParams = {}) =>
-      this.request<
-        {
-          /**
-           * The log entry timestamp.
-           * @format date-time
-           */
-          timestamp?: string;
-          /** The log entry message. */
-          message?: string;
-        }[],
-        void
-      >({
+      this.request<WebhooksLogsListData, void>({
         path: `/api/webhooks/${id}/logs`,
         method: "GET",
         secure: true,
@@ -1811,33 +1829,7 @@ export class Api<
       params: RequestParams = {},
     ) =>
       this.request<
-        {
-          /** Execution time in seconds. */
-          execution_time?: number;
-          /** Number of generations in the optimization process. */
-          generations?: number;
-          /** The final fitness score of the optimization. */
-          fitness?: number;
-          /** The average electricity price in the optimized schedule. */
-          avg_price?: number;
-          /** Whether the schedule was overconstrained. */
-          overconstrained?: boolean;
-          /** List of any problems encountered during scheduling. */
-          problems?: string[];
-          /** The scheduled entities and their states over time. */
-          entities?: {
-            /** The name of the entity. */
-            name?: string;
-            /** The type of the entity (e.g., "battery" or "comfort"). */
-            type?: string;
-            schedule?: {
-              /** The operational state of the entity. */
-              state?: string;
-              /** The charge level (for batteries) or comfort level. */
-              level?: number;
-            }[];
-          }[];
-        },
+        SchedulingOptimizeCreateData,
         | {
             errors?: {
               /** Description of the validation error. */

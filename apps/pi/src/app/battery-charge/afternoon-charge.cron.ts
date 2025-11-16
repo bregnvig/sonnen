@@ -43,10 +43,10 @@ export class AfternoonChargeCronJob {
 
     if (chargeTime > 0) {
       const price = (await (this.costService.getPrices(sunset.minus({ minutes: chargeTime }), sunset))).find(price => price.from.hasSame(now, 'hour'));
-      this.#logger.debug(`AfternoonChargeService: state: ${ usoc }%, price: ${ price?.kWh } kr/kWh`);
+      this.#logger.debug(`AfternoonChargeService: state: ${ usoc }%, price: ${ price?.total } kr/kWh`);
       const startDelay = sunset.minus({ minutes: chargeTime }).diff(now, 'milliseconds').milliseconds;
       const stopDelay = sunset.diff(now, 'milliseconds').milliseconds;
-      const chargePrice = (parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) / 1000) * (chargeTime / 60) * (price?.kWh ?? 0);
+      const chargePrice = (parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) / 1000) * (chargeTime / 60) * (price?.total ?? 0);
 
       const start = setTimeout(async () => {
         await firstValueFrom(this.sonnenService.charge());
@@ -69,7 +69,7 @@ export class AfternoonChargeCronJob {
         `.trim(),
         data: {
           usoc,
-          cost: price?.kWh,
+          cost: price?.total,
         },
       });
       this.schedulerRegistry.addTimeout('afternoon-charge-start', start);
@@ -83,7 +83,7 @@ export class AfternoonChargeCronJob {
         message: `Batteriet er på ${ usoc }%. Der er ingen grund til at oplade 👍`,
         data: {
           usoc,
-          cost: price?.kWh,
+          cost: price?.total,
         },
       });
     }

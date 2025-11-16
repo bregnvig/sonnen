@@ -1,0 +1,11 @@
+meta {
+  name: Gets prices for today
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/prices
+  body: none
+  auth: inherit
+}

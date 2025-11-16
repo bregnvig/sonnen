@@ -1,9 +1,9 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { Api } from '@sonnen/integration';
 
 import type { Cost } from './cost.model';
+import { stromligning } from '@sonnen/integration';
 
 type ElpriserligenuEntry = {
   DKK_per_kWh: number;
@@ -11,18 +11,11 @@ type ElpriserligenuEntry = {
   time_end: string;
 };
 
-function mapToCost(raw: ElpriserligenuEntry): Cost {
-  return {
-    kWh: raw.DKK_per_kWh,
-    from: DateTime.fromISO(raw.time_start),
-    to: DateTime.fromISO(raw.time_end),
-  };
-}
 
 @Injectable()
 export class CostService {
 
-  #integration = new Api();
+  #integration = stromligning;
 
   constructor(private http: HttpService) {
   }
@@ -37,7 +30,12 @@ export class CostService {
     }).then(result => result.data.prices.map(price => ({
         from: DateTime.fromISO(price.date),
         to: DateTime.fromISO(price.date).plus({ hour: 1 }),
-        kWh: price.price.total,
+        total: price.price.total,
+        distribution: price.details.distribution.total,
+        electricity: price.details.electricity.total,
+        electricityTax: price.details.electricityTax.total,
+        transmission: Object.values(price.details.transmission).reduce((acc, details) => acc + details.total, 0),
+        surcharge: price.details.surcharge.total,
       } as Cost)),
     );
   }
@@ -55,7 +53,7 @@ export class CostService {
     let nextHour = date.plus({ hours: 1 });
     while (periodInHours > 0) {
       const nextPrice = prices.find(price => price.from.hasSame(nextHour, 'hour'));
-      if (nextPrice.kWh > currentPrice.kWh) {
+      if (nextPrice.total > currentPrice.total) {
         return true;
       }
       periodInHours--;

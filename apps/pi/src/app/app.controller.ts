@@ -52,6 +52,13 @@ export class AppController {
     return this.chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(date.isValid ? date : DateTime.now().startOf('day'));
   }
 
+  @Get('prices')
+  async getPrices() {
+    const from = DateTime.now().startOf('day');
+    const to = DateTime.now().endOf('day');
+    return this.costService.getPrices(from, to);
+  }
+
   @Get('battery-data')
   async getBatteryData() {
     return this.sonnenService.getBatteryData();
