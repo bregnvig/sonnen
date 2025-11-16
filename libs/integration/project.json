@@ -1,0 +1,26 @@
+{
+  "name": "integration",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/integration/src",
+  "projectType": "library",
+  "tags": ["integration"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/integration",
+        "main": "libs/integration/src/index.ts",
+        "tsConfig": "libs/integration/tsconfig.lib.json",
+        "assets": ["libs/integration/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/integration/jest.config.ts"
+      }
+    }
+  }
+}
