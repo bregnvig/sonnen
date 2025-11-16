@@ -21,9 +21,12 @@ export class AfternoonChargeCronJob {
     this.#logger.debug('AfternoonChargeService started');
     const times = SunCalc.getTimes(new Date(), parseFloat(process.env.SONNEN_LATITUDE), parseFloat(process.env.SONNEN_LONGITUDE));
     const sunset = DateTime.fromJSDate(times.sunsetStart);
-    const milliseconds = sunset.minus({hours: 2, minute: 30}).diff(DateTime.now(), 'milliseconds').milliseconds;
+    const milliseconds = sunset.minus({ hours: 2, minute: 30 }).diff(DateTime.now(), 'milliseconds').milliseconds;
     if (milliseconds > 0) {
-      this.#logger.debug(`Sunset @${sunset.toFormat('HH:mm')}. Charge check @${sunset.minus({hours: 2, minute: 30}).toFormat('HH:mm')}. ${(milliseconds / 60000).toFixed(0)} minutes from now`);
+      this.#logger.debug(`Sunset @${ sunset.toFormat('HH:mm') }. Charge check @${ sunset.minus({
+        hours: 2,
+        minute: 30,
+      }).toFormat('HH:mm') }. ${ (milliseconds / 60000).toFixed(0) } minutes from now`);
       const chargeCheck = setTimeout(() => this.afternoonChargeCheck(sunset), milliseconds);
       this.schedulerRegistry.addTimeout('afternoon-charge-check', chargeCheck);
     } else {
@@ -39,7 +42,7 @@ export class AfternoonChargeCronJob {
     const chargeTime = usoc < 75 ? await this.chargeService.getChargeMinutesByUSOC() : 0;
 
     if (chargeTime > 0) {
-      const price = (await firstValueFrom(this.costService.getPrices(sunset.minus({ minutes: chargeTime })))).find(price => price.from.hasSame(now, 'hour'));
+      const price = (await (this.costService.getPrices(sunset.minus({ minutes: chargeTime }), sunset))).find(price => price.from.hasSame(now, 'hour'));
       this.#logger.debug(`AfternoonChargeService: state: ${ usoc }%, price: ${ price?.kWh } kr/kWh`);
       const startDelay = sunset.minus({ minutes: chargeTime }).diff(now, 'milliseconds').milliseconds;
       const stopDelay = sunset.diff(now, 'milliseconds').milliseconds;
@@ -52,8 +55,8 @@ export class AfternoonChargeCronJob {
         await firstValueFrom(this.sonnenService.stop());
       }, stopDelay);
 
-      this.#logger.debug(`Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${chargePrice.toFixed(2)} kr.`);
-      await this.eventService.sendToUsers('Eftermiddagsopladning', `Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${chargePrice.toFixed(2)} kr.`);
+      this.#logger.debug(`Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${ chargePrice.toFixed(2) } kr.`);
+      await this.eventService.sendToUsers('Eftermiddagsopladning', `Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${ chargePrice.toFixed(2) } kr.`);
       await this.eventService.add({
         type: 'info',
         title: 'Opladning',
@@ -62,7 +65,7 @@ export class AfternoonChargeCronJob {
         Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter.
         Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }.
         Slutter ${ DateTime.now().plus({ millisecond: stopDelay }).toFormat('HH:mm') }.
-        Koster ${chargePrice} kr.
+        Koster ${ chargePrice } kr.
         `.trim(),
         data: {
           usoc,
@@ -72,7 +75,7 @@ export class AfternoonChargeCronJob {
       this.schedulerRegistry.addTimeout('afternoon-charge-start', start);
       this.schedulerRegistry.addTimeout('afternoon-charge-stop', stop);
     } else {
-      const price = (await firstValueFrom(this.costService.getPrices(sunset.minus({ minutes: chargeTime })))).find(price => price.from.hasSame(now, 'hour'));
+      const price = (await this.costService.getPrices(sunset.minus({ minutes: chargeTime }), sunset)).find(price => price.from.hasSame(now, 'hour'));
       await this.eventService.add({
         type: 'info',
         title: 'Opladning',

@@ -1,1 +1,1 @@
-export * from './lib/integration';
+export * from './lib/stromligning/Api';
