@@ -22,16 +22,16 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(service.getLatestData());
       const yesterdaysSurplusProduction = await chargeService.getSurplusProduction();
-      const periodBeforeChargeInHours = yesterdaysSurplusProduction ? DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({ day: 1 }), 'hours').hours: 1;
+      const periodBeforeChargeInHours = yesterdaysSurplusProduction ? DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({ day: 1 }), 'hours').hours : 3;
       const getsMoreExpensive = await costService.itGetsMoreExpensive(DateTime.now(), periodBeforeChargeInHours);
       const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({ day: 1 }));
 
       if (minuttes > 0 && getsMoreExpensive) {
         await event.add({
           title: 'Opladning',
-          message: `Batteriet er lavt. Oplader i ${minuttes} minutter`,
+          message: `Batteriet er lavt. Oplader i ${ minuttes } minutter`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysConsumptionBasedBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ YesterdaysConsumptionBasedBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -51,7 +51,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
           await event.add({
             title: 'Opladning',
             message: `Færdig med at oplade`,
-            source: `${YesterdaysConsumptionBasedBatteryChargeCronJob.name}:ChargeStatus`,
+            source: `${ YesterdaysConsumptionBasedBatteryChargeCronJob.name }:ChargeStatus`,
             type: 'info',
             data: {
               usoc,
@@ -69,7 +69,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysConsumptionBasedBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ YesterdaysConsumptionBasedBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -82,7 +82,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
         await event.add({
           message: `Der er rigeligt med batteri`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysConsumptionBasedBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ YesterdaysConsumptionBasedBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
