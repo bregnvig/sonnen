@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "serve:pi": "nx serve pi --no-tui",
-    "deploy:hosting": "nx build ui --prod && firebase deploy --only hosting",
+    "deploy:hosting": "nx build ui --prod && firebase deploy --only hosting --project production",
     "kill-ports": "npx kill-port --port 9229,9099,5001,8080,9000,5000,8085,9199,9299,4000,4400,4500"
   },
   "private": true,
