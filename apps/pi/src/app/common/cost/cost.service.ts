@@ -1,9 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DateTime } from 'luxon';
 
 import type { Cost } from './cost.model';
 import { stromligning } from '@sonnen/integration';
+import { firstValueFrom, map } from 'rxjs';
 
 type ElpriserligenuEntry = {
   DKK_per_kWh: number;
@@ -16,6 +17,7 @@ type ElpriserligenuEntry = {
 export class CostService {
 
   #integration = stromligning;
+  #logger = new Logger(CostService.name);
 
   constructor(private http: HttpService) {
   }
@@ -37,7 +39,10 @@ export class CostService {
         transmission: Object.values(price.details.transmission).reduce((acc, details) => acc + details.total, 0),
         surcharge: price.details.surcharge.total,
       } as Cost)),
-    );
+    ).catch(() => {
+      this.#logger.warn('Falling back to Elpriser lige nu');
+      return this.#getPricesUsingElpriserNu(from);
+    });
   }
 
   async itGetsMoreExpensive(date: DateTime, periodInHours: number) {
@@ -60,5 +65,23 @@ export class CostService {
       nextHour = date.plus({ hours: 1 });
     }
     return false;
+  }
+
+  #getPricesUsingElpriserNu(date: DateTime = DateTime.now(), region: 'DK2' | 'DK1' = 'DK2'): Promise<Cost[]> {
+    function mapToCost(raw: ElpriserligenuEntry): Cost {
+      return {
+        total: raw.DKK_per_kWh,
+        from: DateTime.fromISO(raw.time_start),
+        to: DateTime.fromISO(raw.time_end),
+      };
+    }
+
+    const year = date.toFormat('yyyy');
+    const month = date.toFormat('MM');
+    const day = date.toFormat('dd');
+    return firstValueFrom(this.http.get<ElpriserligenuEntry[]>(`https://elprisenligenu.dk/api/v1/prices/${ year }/${ month }-${ day }_${ region }.json`).pipe(
+      map(response => response.data),
+      map(data => data.map(mapToCost)),
+    ));
   }
 }
