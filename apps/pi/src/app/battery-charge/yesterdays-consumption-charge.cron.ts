@@ -29,6 +29,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
       if (minuttes > 0 && getsMoreExpensive) {
         const bestChargeTime = await this.getOptimalChargeTime(DateTime.now(), minuttes, periodBeforeSurplusProductionInHours);
         const chargePrice = await this.costService.getTotalCost(bestChargeTime, minuttes);
+        await event.sendToUsers('Nat opladning', `Batteriet er på ${ status.usoc }%. Vil blive opladet i ${ minuttes } minutter. Starter ${ bestChargeTime.toFormat('HH:mm') }. Koster ${ chargePrice.toFixed(2) } kr.`);
         await event.add({
           title: 'Opladning',
           message: `Batteriet er lavt. Oplader i ${ minuttes } minutter`,
@@ -54,6 +55,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
 
         const stop = setTimeout(async () => {
           const usoc = (await firstValueFrom(service.getLatestData())).usoc;
+          await event.sendToUsers('Nat opladning afsluttet', `Batteriet er nu på ${ usoc }%`);
           await event.add({
             title: 'Opladning',
             message: `Færdig med at oplade`,
