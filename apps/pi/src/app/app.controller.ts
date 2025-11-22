@@ -2,10 +2,13 @@ import { Controller, Get, Logger, ParseIntPipe, Query } from '@nestjs/common';
 import { requiredValue } from '@sonnen/utils';
 import { DateTime } from 'luxon';
 import { AppService } from './app.service';
-import { ChargeService } from './battery-charge';
+import {
+  AfternoonChargeCronJob,
+  ChargeService,
+  YesterdaysConsumptionBasedBatteryChargeCronJob,
+} from './battery-charge';
 import { CostService, SonnenService } from './common';
 import { FirebaseService } from './firebase';
-import { AfternoonChargeCronJob } from './battery-charge/afternoon-charge.cron';
 
 @Controller()
 export class AppController {
@@ -15,6 +18,7 @@ export class AppController {
     private readonly appService: AppService,
     private chargeService: ChargeService,
     afternoonChargeCheck: AfternoonChargeCronJob,
+    private yesterdayService: YesterdaysConsumptionBasedBatteryChargeCronJob,
     private readonly costService: CostService,
     private readonly sonnenService: SonnenService,
     private firebase: FirebaseService) {
@@ -57,6 +61,16 @@ export class AppController {
     const from = DateTime.now().startOf('day');
     const to = DateTime.now().endOf('day');
     return this.costService.getPrices(from, to);
+  }
+
+  @Get('cost')
+  async getCost(@Query('date') dateString: string = DateTime.now().toISODate(), @Query('minuttes') minuttes: number) {
+    return this.costService.getTotalCost(DateTime.fromISO(dateString), minuttes);
+  }
+
+  @Get('best-charge-time')
+  async getBestChargeTime(@Query('date') dateString: string = DateTime.now().toISODate(), @Query('minuttes') minuttes: number, @Query('period') period = 8) {
+    return this.yesterdayService.getOptimalChargeTime(DateTime.fromISO(dateString), minuttes, period);
   }
 
   @Get('battery-data')

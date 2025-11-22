@@ -1,0 +1,26 @@
+meta {
+  name: Prices stromligning
+  type: http
+  seq: 7
+}
+
+get {
+  url: https://stromligning.dk/api/prices?supplierId=radius_c&productId=ok_el_flex&customerGroupId=c&from=2025-11-22T03:00:00.000Z&to=2025-11-22T06:00:00.000Z&resolution=1h
+  body: none
+  auth: inherit
+}
+
+params:query {
+  supplierId: radius_c
+  productId: ok_el_flex
+  customerGroupId: c
+  from: 2025-11-22T03:00:00.000Z
+  to: 2025-11-22T06:00:00.000Z
+  resolution: 1h
+  ~lean: true
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

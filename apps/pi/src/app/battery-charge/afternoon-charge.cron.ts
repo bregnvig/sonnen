@@ -3,7 +3,6 @@ import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { DateTime } from 'luxon';
 import { firstValueFrom } from 'rxjs';
 import { CostService, EventService, SonnenService } from '../common';
-import { FirebaseService } from '../firebase';
 import SunCalc from 'suncalc';
 import { ChargeService } from './charge.service';
 
@@ -12,7 +11,7 @@ export class AfternoonChargeCronJob {
 
   #logger = new Logger(AfternoonChargeCronJob.name);
 
-  constructor(private sonnenService: SonnenService, private schedulerRegistry: SchedulerRegistry, private chargeService: ChargeService, private costService: CostService, private eventService: EventService, private firebase: FirebaseService) {
+  constructor(private sonnenService: SonnenService, private schedulerRegistry: SchedulerRegistry, private chargeService: ChargeService, private costService: CostService, private eventService: EventService) {
     this.#logger.debug('AfternoonChargeService started');
   }
 
@@ -42,16 +41,19 @@ export class AfternoonChargeCronJob {
     const chargeTime = usoc < 75 ? await this.chargeService.getChargeMinutesByUSOC() : 0;
 
     if (chargeTime > 0) {
-      const price = (await (this.costService.getPrices(sunset.minus({ minutes: chargeTime }), sunset))).find(price => price.from.hasSame(now, 'hour'));
+      const chargeStart = sunset.minus({ minutes: chargeTime });
+      const price = (await (this.costService.getPrices(chargeStart, sunset))).find(price => price.date.hasSame(now, 'hour'));
       this.#logger.debug(`AfternoonChargeService: state: ${ usoc }%, price: ${ price?.total } kr/kWh`);
-      const startDelay = sunset.minus({ minutes: chargeTime }).diff(now, 'milliseconds').milliseconds;
+      const startDelay = chargeStart.diff(now, 'milliseconds').milliseconds;
       const stopDelay = sunset.diff(now, 'milliseconds').milliseconds;
-      const chargePrice = (parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) / 1000) * (chargeTime / 60) * (price?.total ?? 0);
+      const chargePrice = await this.costService.getTotalCost(chargeStart, chargeTime);
 
       const start = setTimeout(async () => {
         await firstValueFrom(this.sonnenService.charge());
       }, startDelay);
       const stop = setTimeout(async () => {
+        const usoc = await firstValueFrom(this.sonnenService.usoc$);
+        await this.eventService.sendToUsers('Eftermiddagsopladning afsluttet', `Batteriet er nu på ${ usoc }%`);
         await firstValueFrom(this.sonnenService.stop());
       }, stopDelay);
 
@@ -75,7 +77,6 @@ export class AfternoonChargeCronJob {
       this.schedulerRegistry.addTimeout('afternoon-charge-start', start);
       this.schedulerRegistry.addTimeout('afternoon-charge-stop', stop);
     } else {
-      const price = (await this.costService.getPrices(sunset.minus({ minutes: chargeTime }), sunset)).find(price => price.from.hasSame(now, 'hour'));
       await this.eventService.add({
         type: 'info',
         title: 'Opladning',
@@ -83,7 +84,6 @@ export class AfternoonChargeCronJob {
         message: `Batteriet er på ${ usoc }%. Der er ingen grund til at oplade 👍`,
         data: {
           usoc,
-          cost: price?.total,
         },
       });
     }

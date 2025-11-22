@@ -1,0 +1,16 @@
+meta {
+  name: Best charge time
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{host}}/api/best-charge-time?date=2025-11-22T03:00:00.000Z&minuttes=144
+  body: none
+  auth: inherit
+}
+
+params:query {
+  date: 2025-11-22T03:00:00.000Z
+  minuttes: 144
+}

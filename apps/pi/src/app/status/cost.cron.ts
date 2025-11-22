@@ -15,24 +15,24 @@ export class CostCronService {
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
   async reportCost() {
     const now = DateTime.now();
-    const cost = (await (this.service.getPrices(now, now.plus({ hour: 23 })))).filter(({ from }) => from.hasSame(now, 'day'));
+    const cost = (await (this.service.getPrices(now, now.plus({ hour: 23 })))).filter(({ date }) => date.hasSame(now, 'day'));
 
     const minPrice = cost.reduce((min, item) => !min || item.total <= min.total ? item : min, undefined);
     const maxPrice = cost.reduce((max, item) => !max || item.total >= max.total ? item : max, undefined);
 
     const formatCost = (cost: Cost) => ({
       kWh: cost.total,
-      from: cost.from.toFormat('HH:mm'),
+      date: cost.date.toFormat('HH:mm'),
     });
     const message: SonnenEvent = {
       type: 'info',
       title: 'Priser',
       source: `${ CostCronService.name }:CostInfo`,
-      message: `Minimums pris ${ minPrice.total } kr/kWh kl. ${ minPrice.from.toFormat('HH:mm') } - Maximums pris ${ maxPrice.total } kr/kWh kl. ${ maxPrice.from.toFormat('HH:mm') }`,
+      message: `Minimums pris ${ minPrice.total } kr/kWh kl. ${ minPrice.date.toFormat('HH:mm') } - Maximums pris ${ maxPrice.total } kr/kWh kl. ${ maxPrice.date.toFormat('HH:mm') }`,
       data: {
         minPrice: formatCost(minPrice),
         maxPrice: formatCost(maxPrice),
-        day: cost.filter(c => c.from.hour >= 6 && c.from.hour <= 20).map(formatCost),
+        day: cost.filter(c => c.date.hour >= 6 && c.date.hour <= 20).map(formatCost),
       },
     };
     await this.eventService.add(message);

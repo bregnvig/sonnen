@@ -7,6 +7,5 @@ export interface Cost {
   transmission?: number;
   electricityTax?: number;
   distribution?: number;
-  from: DateTime;
-  to: DateTime;
+  date: DateTime;
 }

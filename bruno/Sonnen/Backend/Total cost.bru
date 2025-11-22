@@ -1,0 +1,16 @@
+meta {
+  name: Total cost
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{host}}/api/cost?date=2025-11-22T04:45:00.000Z&minuttes=144
+  body: none
+  auth: inherit
+}
+
+params:query {
+  date: 2025-11-22T04:45:00.000Z
+  minuttes: 144
+}
