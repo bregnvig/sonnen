@@ -43,10 +43,10 @@ export class AfternoonChargeCronJob {
     if (chargeTime > 0) {
       const chargeStart = sunset.minus({ minutes: chargeTime });
       const price = (await (this.costService.getPrices(chargeStart, sunset))).find(price => price.date.hasSame(now, 'hour'));
-      this.#logger.debug(`AfternoonChargeService: state: ${ usoc }%, price: ${ price?.total } kr/kWh`);
       const startDelay = chargeStart.diff(now, 'milliseconds').milliseconds;
       const stopDelay = sunset.diff(now, 'milliseconds').milliseconds;
       const chargePrice = await this.costService.getTotalCost(chargeStart, chargeTime);
+      this.#logger.debug(`AfternoonChargeService: state: ${ usoc }%, price: ${ price?.total } kr/kWh. Total price: ${ chargePrice }`);
 
       const start = setTimeout(async () => {
         await firstValueFrom(this.sonnenService.charge());
