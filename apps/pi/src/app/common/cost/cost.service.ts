@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import type { Cost } from './cost.model';
 import { stromligning } from '@sonnen/integration';
 import { firstValueFrom, map } from 'rxjs';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 type ElpriserligenuEntry = {
   DKK_per_kWh: number;
@@ -18,32 +19,24 @@ export class CostService {
 
   #integration = stromligning;
   #logger = new Logger(CostService.name);
+  #cachedPrices?: Promise<Cost[]>;
 
   constructor(private http: HttpService) {
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async cachePrices() {
+    const start = DateTime.now().startOf('day');
+    const end = DateTime.now().endOf('day');
+    this.#logger.debug(`Caching prices between ${ start.toISO() } and ${ end.toISO() } `);
+    this.#cachedPrices = this.#getPrices(start, end);
+    return this.#cachedPrices;
+  }
+
+
   async getPrices(from: DateTime = DateTime.now(), to = DateTime.now()): Promise<Cost[]> {
-    try {
-      const result_1 = await this.#integration.api.pricesList({
-        supplierId: process.env.STROMLIGNING_SUPPLIER_ID,
-        productId: process.env.STROMLIGNING_PRODUCT_ID,
-        customerGroupId: process.env.STROMLIGNING_CUSTOMER_GROUP_ID,
-        from: from.toISO(),
-        to: to.toISO(),
-      });
-      return result_1.data.prices.map(price => ({
-        date: DateTime.fromISO(price.date),
-        total: price.price.total,
-        distribution: price.details.distribution.total,
-        electricity: price.details.electricity.total,
-        electricityTax: price.details.electricityTax.total,
-        transmission: Object.values(price.details.transmission).reduce((acc, details) => acc + details.total, 0),
-        surcharge: price.details.surcharge.total,
-      } as Cost));
-    } catch {
-      this.#logger.warn('Falling back to Elpriser lige nu');
-      return await this.#getPricesUsingElpriserNu(from);
-    }
+    const prices = await (this.#cachedPrices ?? this.cachePrices());
+    return prices.filter(({ date }) => date >= from && date <= to);
   }
 
   async itGetsMoreExpensive(date: DateTime, periodInHours: number) {
@@ -67,7 +60,7 @@ export class CostService {
   async getTotalCost(date: DateTime, chargeMinuttes: number, chargeWatts: number = parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS)): Promise<number> {
     const endDate = date.plus({ minutes: chargeMinuttes });
     // Fetch prices for the period, plus some buffer to determine interval length.
-    const prices = await this.getPrices(date, endDate.plus({ hours: 1 }));
+    const prices = await this.getPrices(date.minus({ hour: 1 }), endDate.plus({ hours: 1 }));
 
     if (prices.length < 2) { // Need at least 2 to determine interval
       this.#logger.warn(`Not enough price data for ${ date.toISO() }. Cannot calculate cost.`);
@@ -148,4 +141,29 @@ export class CostService {
       map(data => data.map(mapToCost)),
     ));
   }
+
+  async #getPrices(from: DateTime = DateTime.now(), to = DateTime.now()): Promise<Cost[]> {
+    try {
+      const result_1 = await this.#integration.api.pricesList({
+        supplierId: process.env.STROMLIGNING_SUPPLIER_ID,
+        productId: process.env.STROMLIGNING_PRODUCT_ID,
+        customerGroupId: process.env.STROMLIGNING_CUSTOMER_GROUP_ID,
+        from: from.toISO(),
+        to: to.toISO(),
+      });
+      return result_1.data.prices.map(price => ({
+        date: DateTime.fromISO(price.date),
+        total: price.price.total,
+        distribution: price.details.distribution.total,
+        electricity: price.details.electricity.total,
+        electricityTax: price.details.electricityTax.total,
+        transmission: Object.values(price.details.transmission).reduce((acc, details) => acc + details.total, 0),
+        surcharge: price.details.surcharge.total,
+      } as Cost));
+    } catch {
+      this.#logger.warn('Falling back to Elpriser lige nu');
+      return await this.#getPricesUsingElpriserNu(from);
+    }
+  }
+
 }
