@@ -27,6 +27,7 @@ export class AfternoonChargeCronJob {
         minute: 30,
       }).toFormat('HH:mm') }. ${ (milliseconds / 60000).toFixed(0) } minutes from now`);
       const chargeCheck = setTimeout(() => this.afternoonChargeCheck(sunset), milliseconds);
+      this.schedulerRegistry.doesExist('timeout', 'afternoon-charge-check') && this.schedulerRegistry.deleteTimeout('afternoon-charge-check');
       this.schedulerRegistry.addTimeout('afternoon-charge-check', chargeCheck);
     } else {
       this.#logger.debug('Too late for an afternoon charge. Must wait until tomorrow');
@@ -74,6 +75,8 @@ export class AfternoonChargeCronJob {
           cost: price?.total,
         },
       });
+      this.schedulerRegistry.doesExist('timeout', 'afternoon-charge-start') && this.schedulerRegistry.deleteTimeout('afternoon-charge-start');
+      this.schedulerRegistry.doesExist('timeout', 'afternoon-charge-stop') && this.schedulerRegistry.deleteTimeout('afternoon-charge-stop');
       this.schedulerRegistry.addTimeout('afternoon-charge-start', start);
       this.schedulerRegistry.addTimeout('afternoon-charge-stop', stop);
     } else {

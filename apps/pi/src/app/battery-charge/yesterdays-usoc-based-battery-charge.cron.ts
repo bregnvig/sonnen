@@ -30,9 +30,9 @@ export class YesterdaysUSOCBasedBatteryChargeCronJob {
       if (minuttes > 0 && getsMoreExpensive) {
         await event.add({
           title: 'Opladning',
-          message: `Batteriet er lavt. Oplader i ${minuttes} minutter`,
+          message: `Batteriet er lavt. Oplader i ${ minuttes } minutter`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysUSOCBasedBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ YesterdaysUSOCBasedBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -52,7 +52,7 @@ export class YesterdaysUSOCBasedBatteryChargeCronJob {
           await event.add({
             title: 'Opladning',
             message: `Færdig med at oplade`,
-            source: `${YesterdaysUSOCBasedBatteryChargeCronJob.name}:ChargeStatus`,
+            source: `${ YesterdaysUSOCBasedBatteryChargeCronJob.name }:ChargeStatus`,
             type: 'info',
             data: {
               usoc,
@@ -60,17 +60,13 @@ export class YesterdaysUSOCBasedBatteryChargeCronJob {
           });
           await firstValueFrom(this.service.stop());
         }, minuttes * 60 * 1000);
-        try {
-          this.schedulerRegistry.deleteTimeout(`yesterdays-usoc-battery-charge-stop`);
-        } catch {
-          this.#logger.debug('No timeout to delete');
-        }
+        this.schedulerRegistry.doesExist('timeout', `yesterdays-usoc-battery-charge-stop`) && this.schedulerRegistry.deleteTimeout(`yesterdays-usoc-battery-charge-stop`);
         this.schedulerRegistry.addTimeout(`yesterdays-usoc-battery-charge-stop`, timeout);
       } else if (!getsMoreExpensive) {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysUSOCBasedBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ YesterdaysUSOCBasedBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -83,7 +79,7 @@ export class YesterdaysUSOCBasedBatteryChargeCronJob {
         await event.add({
           message: `Der er rigeligt med batteri`,
           timestamp: firestore.Timestamp.now(),
-          source: `${YesterdaysUSOCBasedBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ YesterdaysUSOCBasedBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,

@@ -21,9 +21,9 @@ export class SimpleBatteryChargeCronJob {
       if (minuttes > 0) {
         await event.add({
           title: 'Opladning',
-          message: `Battery low. Charge battery for ${minuttes} minutes`,
+          message: `Battery low. Charge battery for ${ minuttes } minutes`,
           timestamp: firestore.Timestamp.now(),
-          source: `${SimpleBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ SimpleBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,
@@ -40,7 +40,7 @@ export class SimpleBatteryChargeCronJob {
           await event.add({
             title: 'Opladning',
             message: `Battery charge timeout. Stop charging`,
-            source: `${SimpleBatteryChargeCronJob.name}:ChargeStatus`,
+            source: `${ SimpleBatteryChargeCronJob.name }:ChargeStatus`,
             type: 'info',
             data: {
               usoc,
@@ -53,12 +53,13 @@ export class SimpleBatteryChargeCronJob {
         } catch {
           this.#logger.debug('No timeout to delete');
         }
+
         this.schedulerRegistry.addTimeout(`battery-charge-stop`, timeout);
       } else {
         await event.add({
           message: `Sufficient battery level`,
           timestamp: firestore.Timestamp.now(),
-          source: `${SimpleBatteryChargeCronJob.name}:ChargeStatus`,
+          source: `${ SimpleBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',
           data: {
             usoc: status.usoc,

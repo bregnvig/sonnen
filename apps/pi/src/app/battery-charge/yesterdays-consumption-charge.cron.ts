@@ -154,7 +154,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
 
   #cancelPreviousTimer(name: string) {
     try {
-      this.schedulerRegistry.deleteTimeout(name);
+      this.schedulerRegistry.doesExist('timeout', name) && this.schedulerRegistry.deleteTimeout(name);
     } catch {
       this.#logger.debug(`No '${ name }' timeout to delete`);
     }
