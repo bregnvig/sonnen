@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { OperationMode, Status } from '@sonnen/data';
 import { shareLatest } from '@sonnen/utils';
-import { BehaviorSubject, catchError, map, Observable, switchMap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, switchMap, tap, timer } from 'rxjs';
 import { EventService } from '../event';
 import { SonnenConfiguration } from './sonnen-configuration.model';
 import { SonnenLatestData } from './sonnen-latest-data.model';
@@ -14,7 +14,7 @@ export class SonnenService {
 
   #logger = new Logger(SonnenService.name);
 
-  chargeStatus = new BehaviorSubject<boolean>(false);
+  chargeStatus = new BehaviorSubject<'charging' | 'automatic' | 'manuel'>('automatic');
 
   readonly status$: Observable<Status> = timer(0, 60000).pipe(
     switchMap(() => this.#getStatus()),
@@ -43,12 +43,12 @@ export class SonnenService {
   }
 
   charge(watts = process.env.SONNEN_BATTERY_CHARGE_WATTS) {
-    this.chargeStatus.next(true);
     return this.manualMode().pipe(
       switchMap(() => this.http.post<boolean>(`setpoint/charge/${ watts }`)),
+      tap(() => this.chargeStatus.next('charging')),
       map(response => response.data),
       catchError(async error => {
-        this.chargeStatus.next(false);
+        this.#logger.error('Charge issues', error);
         await this.event.add({
           title: 'Lade problemer',
           source: `${ SonnenService.name }:ChargeError`,
@@ -63,9 +63,9 @@ export class SonnenService {
   }
 
   stop() {
-    this.chargeStatus.next(false);
     return this.automaticMode();
   }
+
 
   isManual() {
     return this.#getConfiguration().pipe(
@@ -86,10 +86,12 @@ export class SonnenService {
   }
 
   manualMode() {
+    this.chargeStatus.next('manuel');
     return this.#updateConfiguration({ EM_OperatingMode: '1' });
   }
 
   automaticMode() {
+    this.chargeStatus.next('automatic');
     return this.#updateConfiguration({ EM_OperatingMode: '2' });
   }
 

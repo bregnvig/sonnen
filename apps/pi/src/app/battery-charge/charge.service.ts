@@ -68,7 +68,7 @@ export class ChargeService {
     const capacity = await firstValueFrom(this.sonnen.getCapacity());
     const status = await firstValueFrom(this.sonnen.status$);
     const effect = parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS);
-    return ((capacity * (target - status.usoc) / 100) / effect) * 60;
+    return (((capacity * (target - status.usoc) / 100) / effect) * 60) + 7; // 7 adds it throttels nearing full charge
   }
 
 }

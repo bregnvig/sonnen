@@ -17,7 +17,7 @@ import { ChargeService } from './charge.service';
 export class YesterdaysConsumptionBasedBatteryChargeCronJob {
   readonly #logger = new Logger(YesterdaysConsumptionBasedBatteryChargeCronJob.name);
 
-  constructor(service: SonnenService, event: EventService, chargeService: ChargeService, private costService: CostService, private schedulerRegistry: SchedulerRegistry) {
+  constructor(private service: SonnenService, private event: EventService, chargeService: ChargeService, private costService: CostService, private schedulerRegistry: SchedulerRegistry) {
     this.#logger.debug(process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_WATTS);
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(service.getLatestData());
@@ -65,12 +65,12 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
               usoc,
             },
           });
-          await firstValueFrom(service.stop());
+          await firstValueFrom(service.stop()).then(() => this.#addPause());
         }, startsAt + (minuttes * 60 * 1000));
-        this.#cancelPreviousTimer(`yesterdays-usoc-battery-charge-start`);
-        this.#cancelPreviousTimer(`yesterdays-usoc-battery-charge-stop`);
-        schedulerRegistry.addTimeout(`yesterdays-usoc-battery-charge-start`, start);
-        schedulerRegistry.addTimeout(`yesterdays-usoc-battery-charge-stop`, stop);
+        this.#cancelPreviousTimer(`yesterdays-consumption-charge-start`);
+        this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
+        schedulerRegistry.addTimeout(`yesterdays-consumption-charge-start`, start);
+        schedulerRegistry.addTimeout(`yesterdays-consumption-charge-stop`, stop);
       } else if (!getsMoreExpensive) {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
@@ -97,7 +97,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
         } as SonnenEvent);
       }
     });
-    schedulerRegistry.addCronJob('yesterdays-usoc-battery-check', job);
+    schedulerRegistry.addCronJob('yesterdays-consumption-check', job);
     job.start();
   }
 
@@ -158,5 +158,22 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
     } catch {
       this.#logger.debug(`No '${ name }' timeout to delete`);
     }
+  }
+
+  async #addPause() {
+    this.#cancelPreviousTimer('yesterdays-consumption-pause');
+    firstValueFrom(this.service.manualMode())
+      .then(() => {
+        const stop = DateTime.now().set({ hour: 7, minute: 30 }).diffNow('milliseconds').milliseconds;
+        this.schedulerRegistry.addTimeout(
+          'yesterdays-consumption-pause',
+          setTimeout(() => {
+            this.event.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
+            this.service.automaticMode();
+          }, stop),
+        );
+      })
+      .catch(error => this.#logger.error('Unable to switch to manual mode', error));
+
   }
 }
