@@ -65,7 +65,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
               usoc,
             },
           });
-          await firstValueFrom(service.stop()).then(() => this.#addPause());
+          await firstValueFrom(service.charge('0')).then(() => this.#addPause());
         }, startsAt + (minuttes * 60 * 1000));
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-start`);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
@@ -162,18 +162,13 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
 
   async #addPause() {
     this.#cancelPreviousTimer('yesterdays-consumption-pause');
-    firstValueFrom(this.service.manualMode())
-      .then(() => {
-        const stop = DateTime.now().set({ hour: 7, minute: 30 }).diffNow('milliseconds').milliseconds;
-        this.schedulerRegistry.addTimeout(
-          'yesterdays-consumption-pause',
-          setTimeout(() => {
-            this.event.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
-            this.service.automaticMode();
-          }, stop),
-        );
-      })
-      .catch(error => this.#logger.error('Unable to switch to manual mode', error));
-
+    const stop = DateTime.now().set({ hour: 7, minute: 30 }).diffNow('milliseconds').milliseconds;
+    this.schedulerRegistry.addTimeout(
+      'yesterdays-consumption-pause',
+      setTimeout(async () => {
+        await this.event.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
+        await firstValueFrom(this.service.automaticMode());
+      }, stop),
+    );
   }
 }
