@@ -1,0 +1,15 @@
+meta {
+  name: Set mode
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{host}}/api/mode?mode=manual
+  body: none
+  auth: inherit
+}
+
+params:query {
+  mode: manual
+}

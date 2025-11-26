@@ -71,7 +71,7 @@ export class AppController {
 
   @Post('mode')
   async setMode(@Query('mode') mode: 'automatic' | 'manual') {
-    await mode === 'automatic' ? this.sonnenService.automaticMode() : this.sonnenService.manualMode();
+    await firstValueFrom(mode === 'automatic' ? this.sonnenService.automaticMode() : this.sonnenService.manualMode());
     return firstValueFrom(this.sonnenService.status$.pipe(map(status => status.operatingMode)));
   }
 
