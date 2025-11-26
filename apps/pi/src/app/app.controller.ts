@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Logger, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { requiredValue } from '@sonnen/utils';
 import { DateTime } from 'luxon';
 import { AppService } from './app.service';
@@ -9,6 +9,7 @@ import {
 } from './battery-charge';
 import { CostService, SonnenService } from './common';
 import { FirebaseService } from './firebase';
+import { firstValueFrom, map } from 'rxjs';
 
 @Controller()
 export class AppController {
@@ -66,6 +67,12 @@ export class AppController {
   @Get('cost')
   async getCost(@Query('date') dateString: string = DateTime.now().toISODate(), @Query('minuttes') minuttes: number) {
     return this.costService.getTotalCost(DateTime.fromISO(dateString), minuttes);
+  }
+
+  @Post('mode')
+  async setMode(@Query('mode') mode: 'automatic' | 'manual') {
+    await mode === 'automatic' ? this.sonnenService.automaticMode() : this.sonnenService.manualMode();
+    return firstValueFrom(this.sonnenService.status$.pipe(map(status => status.operatingMode)));
   }
 
   @Get('best-charge-time')
