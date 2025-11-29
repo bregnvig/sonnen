@@ -48,6 +48,7 @@ export class AppController {
   @Get('surplus')
   async getSurplus(@Query('date') dateString: string = DateTime.now().toISODate()) {
     const date = DateTime.fromISO(dateString).startOf('day');
+    this.#logger.debug(date.isValid ? `Checking ${ date.toISODate() }` : 'Date not valid. Using today');
     return this.chargeService.getSurplusProduction(date.isValid ? date : DateTime.now().startOf('day'));
   }
 
