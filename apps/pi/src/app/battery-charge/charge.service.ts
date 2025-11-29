@@ -95,8 +95,8 @@ export class ChargeService {
       }
       if (surplusCount > surplusThreshold) {
         this.#logger.debug(`Produces more at ${ _.timestamp.toISO() }`);
-        const p = Array.from({ length: surplusWindowMinutes }).map((_, i) => production[i].production).join(', ');
-        const c = Array.from({ length: surplusWindowMinutes }).map((_, i) => consumptionDay.consumption[i].consumption).join(', ');
+        const p = Array.from({ length: surplusWindowMinutes }).map((_, i) => production[index + i].production).join(', ');
+        const c = Array.from({ length: surplusWindowMinutes }).map((_, i) => consumptionDay.consumption[index + i].consumption).join(', ');
         this.#logger.debug(p);
         this.#logger.debug(c);
       }
