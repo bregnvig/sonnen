@@ -83,8 +83,6 @@ export class ChargeService {
       if (index > production.length - surplusWindowMinutes) {
         return false;
       }
-      this.#logger.debug('Production day items', productionDay.production.length, consumptionDay.consumption.length);
-
       let surplusCount = 0;
       for (let i = 0; i < surplusWindowMinutes; i++) {
         const productionItem = production[index + i];
@@ -95,7 +93,7 @@ export class ChargeService {
           surplusCount++;
         }
       }
-      this.#logger.debug(surplusCount > surplusThreshold ? `Produces more at ${ _.timestamp.toISO() }` : `Not found for ${ _.timestamp.toISO() }`);
+      surplusCount > surplusThreshold && this.#logger.debug(`Produces more at ${ _.timestamp.toISO() }`);
       return surplusCount > surplusThreshold;
     });
 
