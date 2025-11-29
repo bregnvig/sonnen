@@ -26,7 +26,7 @@ export class ChargeService {
       const productionDay = await this.collection.getProduction(date);
       const consumptionDay = await this.collection.getAverageConsumption(date);
 
-      const firstTimeProductionMoreThenConsumption = productionDay.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
+      const firstTimeProductionMoreThenConsumption = this.#findFirstSurplusTimestamp(productionDay, consumptionDay);
 
       return firstTimeProductionMoreThenConsumption ? {
         battery: batteryDay.battery.find(b => b.timestamp.hasSame(firstTimeProductionMoreThenConsumption, 'minute')),
@@ -43,7 +43,7 @@ export class ChargeService {
     const productionDay = await this.collection.getProduction(date).catch(() => null as ProductionDay);
     const consumptionDay = await this.collection.getAverageConsumption(date).catch(() => null as AverageConsumptionDay);
 
-    const firstTimeProductionMoreThenConsumption = productionDay?.production.find((p, index) => p.production > consumptionDay.consumption[index]?.consumption)?.timestamp;
+    const firstTimeProductionMoreThenConsumption = this.#findFirstSurplusTimestamp(productionDay, consumptionDay);
     if (!firstTimeProductionMoreThenConsumption) {
       return this.getChargeMinutesByUSOC();
     }
@@ -69,6 +69,33 @@ export class ChargeService {
     const status = await firstValueFrom(this.sonnen.status$);
     const effect = parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS);
     return (((capacity * (target - status.usoc) / 100) / effect) * 60) + 7; // 7 adds it throttels nearing full charge
+  }
+
+  #findFirstSurplusTimestamp(productionDay: ProductionDay, consumptionDay: AverageConsumptionDay): DateTime | undefined {
+    if (!productionDay?.production || !consumptionDay?.consumption) {
+      return undefined;
+    }
+
+    const surplusWindowMinutes = 30;
+    const surplusThreshold = 15; // More often than not
+
+    const firstSurplusIndex = productionDay.production.findIndex((_, index, production) => {
+      if (index > production.length - surplusWindowMinutes) {
+        return false;
+      }
+
+      let surplusCount = 0;
+      for (let i = 0; i < surplusWindowMinutes; i++) {
+        const productionItem = production[index + i];
+        const consumptionItem = consumptionDay.consumption[index + i];
+        if (productionItem && consumptionItem && productionItem.production > consumptionItem.consumption) {
+          surplusCount++;
+        }
+      }
+      return surplusCount > surplusThreshold;
+    });
+
+    return firstSurplusIndex > -1 ? productionDay.production[firstSurplusIndex].timestamp : undefined;
   }
 
 }
