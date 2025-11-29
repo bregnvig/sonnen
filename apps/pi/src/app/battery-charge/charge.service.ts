@@ -68,7 +68,7 @@ export class ChargeService {
     const capacity = await firstValueFrom(this.sonnen.getCapacity());
     const status = await firstValueFrom(this.sonnen.status$);
     const effect = parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS);
-    return (((capacity * (target - status.usoc) / 100) / effect) * 60) + 7; // 7 adds it throttels nearing full charge
+    return (((capacity * (target - status.usoc) / 100) / effect) * 60) + 7; // 7 adds it throttle nearing full charge
   }
 
   #findFirstSurplusTimestamp(productionDay: ProductionDay, consumptionDay: AverageConsumptionDay): DateTime | undefined {
@@ -93,7 +93,13 @@ export class ChargeService {
           surplusCount++;
         }
       }
-      surplusCount > surplusThreshold && this.#logger.debug(`Produces more at ${ _.timestamp.toISO() }`);
+      if (surplusCount > surplusThreshold) {
+        this.#logger.debug(`Produces more at ${ _.timestamp.toISO() }`);
+        const p = Array.from({ length: surplusWindowMinutes }).map((_, i) => production[i].production).join(', ');
+        const c = Array.from({ length: surplusWindowMinutes }).map((_, i) => consumptionDay.consumption[i].consumption).join(', ');
+        this.#logger.debug(p);
+        this.#logger.debug(c);
+      }
       return surplusCount > surplusThreshold;
     });
 
