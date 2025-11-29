@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { DateTime } from 'luxon';
 import { firstValueFrom, map } from 'rxjs';
 import { EventService, SonnenCollectionService, SonnenService } from '../common';
+import { filterUndefined } from '@sonnen/utils';
 
 @Injectable()
 export class BatteryCronService {
@@ -32,17 +33,17 @@ export class BatteryCronService {
     const usoc = await firstValueFrom(this.service.status$.pipe(
       map(({ usoc }) => usoc),
     ));
-    const message = `Minimum batteri niveau var ${this.minUSOC}% kl. ${this.minTimestamp?.toFormat('HH:mm')}`;
+    const message = `Minimum batteri niveau var ${ this.minUSOC }% kl. ${ this.minTimestamp?.toFormat('HH:mm') }`;
     await this.eventService.add({
       type: 'info',
       title: 'Batteri procent',
-      source: `${BatteryCronService.name}:MinimumBatteryLevel`,
+      source: `${ BatteryCronService.name }:MinimumBatteryLevel`,
       message,
-      data: {
+      data: filterUndefined({
         usoc,
         minUSOC: this.minUSOC,
         minTimestamp: this.minTimestamp?.toFormat('HH:mm'),
-      },
+      }),
     });
     this.minTimestamp = undefined;
     this.minUSOC = 100;
