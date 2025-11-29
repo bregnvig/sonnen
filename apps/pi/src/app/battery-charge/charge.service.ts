@@ -83,7 +83,6 @@ export class ChargeService {
       if (index > production.length - surplusWindowMinutes) {
         return false;
       }
-      this.#logger.log('Day', productionDay.day.toISODate());
       this.#logger.debug('Production day items', productionDay.production.length, consumptionDay.consumption.length);
 
       let surplusCount = 0;
