@@ -90,7 +90,7 @@ export class ChargeService {
         const productionItem = production[index + i];
         const consumptionItem = consumptionDay.consumption[index + i];
         const isProducingMoreThanConsuming = productionItem && consumptionItem && productionItem.production > consumptionItem.consumption;
-        if (index === 0 && !isProducingMoreThanConsuming) break;
+        if (index === 0 && !isProducingMoreThanConsuming) return false;
         if (isProducingMoreThanConsuming) {
           surplusCount++;
         }
