@@ -23,10 +23,14 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
       const status = await firstValueFrom(service.getLatestData());
       const yesterdaysSurplusProduction = await chargeService.getSurplusProduction();
       const periodBeforeSurplusProductionInHours = yesterdaysSurplusProduction ? DateTime.now().diff(yesterdaysSurplusProduction.battery.timestamp.plus({ day: 1 }), 'hours').hours : undefined;
-      const getsMoreExpensive = await costService.itGetsMoreExpensive(DateTime.now(), periodBeforeSurplusProductionInHours ?? 8);
+      const itGetsMoreExpensive = await costService.itGetsMoreExpensive(DateTime.now().set({
+        hour: 6,
+        minute: 0,
+        second: 0,
+      }), periodBeforeSurplusProductionInHours ?? 8);
       const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({ day: 1 }));
 
-      if (minuttes > 0 && getsMoreExpensive) {
+      if (minuttes > 0 && itGetsMoreExpensive) {
         const bestChargeTime = await this.getOptimalChargeTime(DateTime.now(), minuttes, periodBeforeSurplusProductionInHours);
         const chargePrice = await this.costService.getTotalCost(bestChargeTime, minuttes);
         await event.sendToUsers('Nat opladning', `Batteriet er på ${ status.usoc }%. Vil blive opladet i ${ minuttes } minutter. Starter ${ bestChargeTime.toFormat('HH:mm') }. Koster ${ chargePrice.toFixed(2) } kr.`);
@@ -42,7 +46,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
             price: chargePrice,
             yesterdaysSurplusProduction: yesterdaysSurplusProduction ?? -1,
             periodBeforeSurplusProductionInHours: periodBeforeSurplusProductionInHours ?? -1,
-            getsMoreExpensive,
+            getsMoreExpensive: itGetsMoreExpensive,
           },
         });
 
@@ -71,7 +75,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-start`, start);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-stop`, stop);
-      } else if (!getsMoreExpensive) {
+      } else if (!itGetsMoreExpensive) {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
           timestamp: firestore.Timestamp.now(),
@@ -81,7 +85,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
             usoc: status.usoc,
             usocYesterday: yesterdaysSurplusProduction ?? -1,
             periodBeforeSurplusProductionInHours: periodBeforeSurplusProductionInHours ?? -1,
-            getsMoreExpensive,
+            getsMoreExpensive: itGetsMoreExpensive,
           },
         } as SonnenEvent);
       } else {
