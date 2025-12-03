@@ -30,7 +30,7 @@ export class YesterdaysUSOCBasedBatteryChargeCronJob {
       if (minuttes > 0 && getsMoreExpensive) {
         await event.add({
           title: 'Opladning',
-          message: `Batteriet er lavt. Oplader i ${ minuttes } minutter`,
+          message: `Batteriet er lavt. Oplader i ${ minuttes.toFixed(2) } minutter`,
           timestamp: firestore.Timestamp.now(),
           source: `${ YesterdaysUSOCBasedBatteryChargeCronJob.name }:ChargeStatus`,
           type: 'info',

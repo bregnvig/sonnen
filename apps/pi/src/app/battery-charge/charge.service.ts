@@ -50,14 +50,14 @@ export class ChargeService {
 
     const consumption = consumptionDay.consumption.filter(c => c.timestamp >= date && c.timestamp <= firstTimeProductionMoreThenConsumption);
     const production = productionDay.production.filter(c => c.timestamp >= date && c.timestamp <= firstTimeProductionMoreThenConsumption);
-
+    this.#logger.debug(`Consumption entries: ${ consumption.length }. Production entries: ${ production.length }`);
     const averageConsumption = consumption.reduce((acc, c) => acc + c.consumption, 0) / consumption.length;
-    const averageProduction = production.reduce((acc, c) => acc + c.production, 0) / consumption.length;
+    const averageProduction = production.reduce((acc, c) => acc + c.production, 0) / production.length;
 
     const status = await firstValueFrom(this.sonnen.status$);
     const Wh = ((averageConsumption - averageProduction) * (firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes)) / 60;
     const insufficientWh = Wh - status.remainingCapacityWh;
-    this.#logger.log('Charge time', `Remaining capacity: ${ status.remainingCapacityWh } Wh, Consumption: ${ averageConsumption } W, Production: ${ averageProduction } W, Time: ${ firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes } minutes, Insufficient Wh: ${ insufficientWh } Wh`);
+    this.#logger.log('Charge time', `Status: ${ status.usoc }. Remaining capacity: ${ status.remainingCapacityWh } Wh, Consumption: ${ averageConsumption } W, Production: ${ averageProduction } W, Time: ${ firstTimeProductionMoreThenConsumption.diff(date, 'minutes').minutes } minutes, Insufficient Wh: ${ insufficientWh } Wh`);
     return insufficientWh < 0
       ? 0
       : insufficientWh / parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS) * 60;
@@ -68,6 +68,7 @@ export class ChargeService {
     const capacity = await firstValueFrom(this.sonnen.getCapacity());
     const status = await firstValueFrom(this.sonnen.status$);
     const effect = parseInt(process.env.SONNEN_BATTERY_CHARGE_WATTS);
+    this.#logger.debug(`Capacity: ${ capacity }. Status: ${ status }. Effect: ${ effect }`);
     return (((capacity * (target - status.usoc) / 100) / effect) * 60) + 7; // 7 adds it throttle nearing full charge
   }
 
@@ -99,10 +100,11 @@ export class ChargeService {
         const c = Array.from({ length: surplusWindowMinutes }).map((_, i) => consumptionDay.consumption[index + i].consumption).join(', ');
         this.#logger.debug(p);
         this.#logger.debug(c);
+      } else {
+        this.#logger.debug('Found no surplus production');
       }
       return surplusCount > surplusThreshold;
     });
-
     return firstSurplusIndex > -1 ? productionDay.production[firstSurplusIndex].timestamp : undefined;
   }
 
