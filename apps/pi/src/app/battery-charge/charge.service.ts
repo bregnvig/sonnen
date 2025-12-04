@@ -2,14 +2,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import process from 'node:process';
 import { firstValueFrom } from 'rxjs';
-import { SonnenCollectionService, SonnenService } from '../common';
+import { EventService, SonnenCollectionService, SonnenService } from '../common';
 import { AverageConsumptionDay, BatteryDay, ProductionDay } from '@sonnen/data';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ChargeService {
   readonly #logger = new Logger(ChargeService.name);
 
-  constructor(private sonnen: SonnenService, private collection: SonnenCollectionService) {
+  constructor(private sonnen: SonnenService, private events: EventService, private collection: SonnenCollectionService, private schedulerRegistry: SchedulerRegistry) {
   }
 
   /**
@@ -106,6 +107,24 @@ export class ChargeService {
       return surplusCount > surplusThreshold;
     });
     return firstSurplusIndex > -1 ? productionDay.production[firstSurplusIndex].timestamp : undefined;
+  }
+
+  async startChargeChecker(stopAt: number) {
+
+    const cancelChecker = () => this.schedulerRegistry.doesExist('interval', 'charge-checker') && this.schedulerRegistry.deleteInterval('afternoon-charge-checker');
+    cancelChecker();
+    this.schedulerRegistry.addInterval('charge-checker', setInterval(async () => {
+      try {
+        if (this.sonnen.isAutomatic()) {
+          await this.events.sendToUsers('Not in correct mode', 'SHould be in manual mode, but it is not');
+          this.#logger.warn('Is automatic. Should be manual and charging');
+        }
+      } catch (error) {
+        this.#logger.warn('Unable to get mode', error?.message);
+      }
+    }, 30000));
+    this.schedulerRegistry.doesExist('timeout', 'charge-checker-stop');
+    this.schedulerRegistry.addTimeout('charge-checker-stop', setTimeout(() => cancelChecker(), stopAt));
   }
 
 }

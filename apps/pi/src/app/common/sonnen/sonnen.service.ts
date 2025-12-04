@@ -48,7 +48,7 @@ export class SonnenService {
       tap(() => this.chargeStatus.next('charging')),
       map(response => response.data),
       catchError(async error => {
-        this.#logger.error('Charge issues', error);
+        this.#logger.warn('Charge issues', error);
         await this.event.add({
           title: 'Lade problemer',
           source: `${ SonnenService.name }:ChargeError`,

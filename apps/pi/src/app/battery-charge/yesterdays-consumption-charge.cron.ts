@@ -57,6 +57,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
             .catch(error => this.#logger.warn(`Unable to start charging`, error));
         }, startsAt);
 
+        const stopAt = startsAt + (minuttes * 60 * 1000);
         const stop = setTimeout(async () => {
           const usoc = (await firstValueFrom(service.getLatestData())).usoc;
           await event.sendToUsers('Nat opladning afsluttet', `Batteriet er nu på ${ usoc }%`);
@@ -70,11 +71,12 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
             },
           });
           await firstValueFrom(service.charge('0')).then(() => this.#addPause());
-        }, startsAt + (minuttes * 60 * 1000));
+        }, stopAt);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-start`);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-start`, start);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-stop`, stop);
+        chargeService.startChargeChecker(stopAt - 5000);
       } else if (!itGetsMoreExpensive) {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
