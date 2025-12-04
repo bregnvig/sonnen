@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { OperationMode, Status } from '@sonnen/data';
 import { shareLatest } from '@sonnen/utils';
-import { BehaviorSubject, catchError, map, Observable, switchMap, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, retry, switchMap, tap, timer } from 'rxjs';
 import { EventService } from '../event';
 import { SonnenConfiguration } from './sonnen-configuration.model';
 import { SonnenLatestData } from './sonnen-latest-data.model';
@@ -119,6 +119,10 @@ export class SonnenService {
 
   #getStatus() {
     return this.http.get<SonnenStatus>('status').pipe(
+      retry({
+        count: 3,
+        delay: 2000,
+      }),
       map(response => response.data),
       map(response => sonnenMapper.status(response)),
     );

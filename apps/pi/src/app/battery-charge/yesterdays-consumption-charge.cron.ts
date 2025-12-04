@@ -117,7 +117,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
     const priceIntervalInMinutes = prices[1].date.diff(prices[0].date, 'minutes').minutes;
 
     if (priceIntervalInMinutes <= 0) {
-      this.#logger.error('Invalid price interval calculated. Cannot determine optimal charge time. Starting now.');
+      this.#logger.warn('Invalid price interval calculated. Cannot determine optimal charge time. Starting now.');
       return date;
     }
 
