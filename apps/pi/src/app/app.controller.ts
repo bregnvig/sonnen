@@ -70,6 +70,17 @@ export class AppController {
     return this.costService.getTotalCost(DateTime.fromISO(dateString), minuttes);
   }
 
+  @Get('mode')
+  async getMode() {
+    const isAutomatic = await firstValueFrom(this.sonnenService.isAutomatic());
+    const isManual = await firstValueFrom(this.sonnenService.isManual());
+    return firstValueFrom(this.sonnenService.status$).then(status => ({
+      mode: status.operatingMode,
+      isAutomatic,
+      isManual,
+    }));
+  }
+
   @Post('mode')
   async setMode(@Query('mode') mode: 'automatic' | 'manual') {
     await firstValueFrom(mode === 'automatic' ? this.sonnenService.automaticMode() : this.sonnenService.manualMode());
