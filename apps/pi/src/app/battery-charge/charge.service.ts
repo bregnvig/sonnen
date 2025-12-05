@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import process from 'node:process';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, retry } from 'rxjs';
 import { EventService, SonnenCollectionService, SonnenService } from '../common';
 import { AverageConsumptionDay, BatteryDay, ProductionDay } from '@sonnen/data';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -111,13 +111,27 @@ export class ChargeService {
 
   async startChargeChecker(stopAt: number) {
 
-    const cancelChecker = () => this.schedulerRegistry.doesExist('interval', 'charge-checker') && this.schedulerRegistry.deleteInterval('afternoon-charge-checker');
+    const cancelChecker = () => this.schedulerRegistry.doesExist('interval', 'charge-checker') && this.schedulerRegistry.deleteInterval('charge-checker');
     cancelChecker();
+    let tries = 0;
     this.schedulerRegistry.addInterval('charge-checker', setInterval(async () => {
       try {
-        if (this.sonnen.isAutomatic()) {
-          await this.events.sendToUsers('Not in correct mode', 'SHould be in manual mode, but it is not');
-          this.#logger.warn('Is automatic. Should be manual and charging');
+        const isAutomatic = await firstValueFrom(this.sonnen.isAutomatic());
+        if (isAutomatic) {
+          await this.events.sendToUsers('Not in correct mode', 'Should be in manual mode, but it is not');
+          this.#logger.warn(`Is automatic. Should be manual and charging. Trying to reestablish #${ tries + 1 }`);
+          if (tries < 5) {
+            await firstValueFrom(this.sonnen.charge().pipe(
+              retry({
+                count: 2,
+                delay: 10000,
+              }),
+            ));
+            tries++;
+          } else {
+            this.#logger.warn('Unable to reestablish charge. Given up');
+            this.schedulerRegistry.deleteInterval('charge-checker');
+          }
         }
       } catch (error) {
         this.#logger.warn('Unable to get mode', error?.message);
