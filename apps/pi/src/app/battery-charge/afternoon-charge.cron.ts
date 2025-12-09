@@ -78,7 +78,7 @@ export class AfternoonChargeCronJob {
       this.schedulerRegistry.doesExist('timeout', 'afternoon-charge-start') && this.schedulerRegistry.deleteTimeout('afternoon-charge-start');
       this.schedulerRegistry.doesExist('timeout', 'afternoon-charge-stop') && this.schedulerRegistry.deleteTimeout('afternoon-charge-stop');
       this.schedulerRegistry.addTimeout('afternoon-charge-start', start);
-      this.chargeService.startChargeChecker(stopDelay - 5000);
+      this.chargeService.monitorChargeStatus(stopDelay - 5000);
       this.schedulerRegistry.addTimeout('afternoon-charge-stop', stop);
 
     } else {

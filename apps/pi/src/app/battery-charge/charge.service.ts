@@ -109,7 +109,7 @@ export class ChargeService {
     return firstSurplusIndex > -1 ? productionDay.production[firstSurplusIndex].timestamp : undefined;
   }
 
-  async startChargeChecker(stopAt: number) {
+  monitorChargeStatus(stopAt: number) {
 
     const cancelChecker = () => this.schedulerRegistry.doesExist('interval', 'charge-checker') && this.schedulerRegistry.deleteInterval('charge-checker');
     cancelChecker();
@@ -118,7 +118,7 @@ export class ChargeService {
       try {
         const isAutomatic = await firstValueFrom(this.sonnen.isAutomatic());
         if (isAutomatic) {
-          await this.events.sendToUsers('Not in correct mode', 'Should be in manual mode, but it is not');
+          await this.events.sendToUsers('Not in correct mode', `Should be in manual mode, but it is not. ${ tries + 1 }. retry`);
           this.#logger.warn(`Is automatic. Should be manual and charging. Trying to reestablish #${ tries + 1 }`);
           if (tries < 5) {
             await firstValueFrom(this.sonnen.charge().pipe(

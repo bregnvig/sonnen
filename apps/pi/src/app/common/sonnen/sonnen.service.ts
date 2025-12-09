@@ -42,7 +42,7 @@ export class SonnenService {
     );
   }
 
-  charge(watts = process.env.SONNEN_BATTERY_CHARGE_WATTS) {
+  charge(watts: string | number = process.env.SONNEN_BATTERY_CHARGE_WATTS) {
     return this.manualMode().pipe(
       switchMap(() => this.http.post<boolean>(`setpoint/charge/${ watts }`)),
       tap(() => this.chargeStatus.next('charging')),

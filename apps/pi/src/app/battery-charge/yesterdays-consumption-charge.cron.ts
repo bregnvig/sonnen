@@ -29,7 +29,6 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
         second: 0,
       }), periodBeforeSurplusProductionInHours ?? 8);
       const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({ day: 1 }));
-
       if (minuttes > 0 && itGetsMoreExpensive) {
         const bestChargeTime = await this.getOptimalChargeTime(DateTime.now(), minuttes, periodBeforeSurplusProductionInHours);
         const chargePrice = await this.costService.getTotalCost(bestChargeTime, minuttes);
@@ -70,13 +69,14 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
               usoc,
             },
           });
-          await firstValueFrom(service.charge('0')).then(() => this.#addPause());
+          await firstValueFrom(service.charge('0'));
         }, stopAt);
+        await this.#addPause(!!yesterdaysSurplusProduction, stopAt);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-start`);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-start`, start);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-stop`, stop);
-        chargeService.startChargeChecker(stopAt - 5000);
+        chargeService.monitorChargeStatus(stopAt - 5000);
       } else if (!itGetsMoreExpensive) {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
@@ -166,15 +166,18 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
     }
   }
 
-  async #addPause() {
+  async #addPause(hadSurplusProductionYesterday: boolean, stopChargingAt: number) {
     this.#cancelPreviousTimer('yesterdays-consumption-pause');
-    const stop = DateTime.now().set({ hour: 7, minute: 30 }).diffNow('milliseconds').milliseconds;
+    const stop = DateTime.now().set({
+      hour: hadSurplusProductionYesterday ? 6 : 7,
+      minute: 30,
+    }).diffNow('milliseconds').milliseconds;
     this.schedulerRegistry.addTimeout(
       'yesterdays-consumption-pause',
       setTimeout(async () => {
         await this.event.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
         await firstValueFrom(this.service.automaticMode());
-      }, stop),
+      }, Math.max(stop, stopChargingAt)),
     );
   }
 }
