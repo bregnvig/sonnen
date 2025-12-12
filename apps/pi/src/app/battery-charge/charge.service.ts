@@ -137,7 +137,7 @@ export class ChargeService {
         this.#logger.warn('Unable to get mode', error?.message);
       }
     }, 30000));
-    this.schedulerRegistry.doesExist('timeout', 'charge-checker-stop');
+    this.schedulerRegistry.doesExist('timeout', 'charge-checker-stop') && this.schedulerRegistry.deleteTimeout('charge-checker-stop');
     this.schedulerRegistry.addTimeout('charge-checker-stop', setTimeout(() => cancelChecker(), stopAt));
   }
 
