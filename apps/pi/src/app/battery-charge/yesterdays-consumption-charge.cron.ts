@@ -76,7 +76,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-start`, start);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-stop`, stop);
-        chargeService.monitorChargeStatus(stopAt - 5000);
+        chargeService.monitorChargeStatus(startsAt, stopAt - 5000);
       } else if (!itGetsMoreExpensive) {
         await event.add({
           message: `Strømmen bliver billigere, så der er ingen grund til at oplade`,
