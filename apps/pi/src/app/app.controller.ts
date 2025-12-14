@@ -81,6 +81,11 @@ export class AppController {
     }));
   }
 
+  @Get('status')
+  async getStatus() {
+    return firstValueFrom(this.sonnenService.status$);
+  }
+
   @Post('mode')
   async setMode(@Query('mode') mode: 'automatic' | 'manual') {
     await firstValueFrom(mode === 'automatic' ? this.sonnenService.automaticMode() : this.sonnenService.manualMode());
