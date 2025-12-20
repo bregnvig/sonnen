@@ -74,6 +74,55 @@ export class ChargeService {
     return (((capacity * (target - status.usoc) / 100) / effect) * 60) + 7; // 7 adds it throttle nearing full charge
   }
 
+  monitorChargeStatus(startAt: number, stopAt: number) {
+
+    const cancelChecker = () => this.schedulerRegistry.doesExist('interval', 'charge-checker') && this.schedulerRegistry.deleteInterval('charge-checker');
+    cancelChecker();
+    const startChecker = () => {
+      let tries = 0;
+      this.schedulerRegistry.addInterval('charge-checker', setInterval(async () => {
+        try {
+          const isAutomatic = await firstValueFrom(this.sonnen.isAutomatic());
+          if (isAutomatic) {
+            await this.events.sendToUsers('Not in correct mode', `Should be in manual mode, but it is not. ${ tries + 1 }. retry`);
+            this.#logger.warn(`Is automatic. Should be manual and charging. Trying to reestablish #${ tries + 1 }`);
+            if (tries < 5) {
+              await firstValueFrom(this.sonnen.charge().pipe(
+                retry({
+                  count: 2,
+                  delay: 10000,
+                }),
+              ));
+              tries++;
+            } else {
+              this.#logger.warn('Unable to reestablish charge. Given up');
+              this.schedulerRegistry.deleteInterval('charge-checker');
+            }
+          }
+        } catch (error) {
+          this.#logger.warn('Unable to get mode', error?.message);
+        }
+      }, 30000));
+    };
+    this.schedulerRegistry.doesExist('timeout', 'charge-checker-start') && this.schedulerRegistry.deleteTimeout('charge-checker-start');
+    this.schedulerRegistry.doesExist('timeout', 'charge-checker-stop') && this.schedulerRegistry.deleteTimeout('charge-checker-stop');
+    this.schedulerRegistry.addTimeout('charge-checker-start', setTimeout(() => startChecker(), startAt));
+    this.schedulerRegistry.addTimeout('charge-checker-stop', setTimeout(() => cancelChecker(), stopAt));
+  }
+
+
+  async addDischargePause(pauseUntil: DateTime, stopChargingAt = 0) {
+    const stop = pauseUntil.diffNow('milliseconds').milliseconds;
+    this.schedulerRegistry.doesExist('timeout', 'consumption-pause') && this.schedulerRegistry.deleteTimeout('consumption-pause');
+    this.schedulerRegistry.addTimeout(
+      'consumption-pause',
+      setTimeout(async () => {
+        await this.events.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
+        await firstValueFrom(this.sonnen.automaticMode());
+      }, Math.max(stop, stopChargingAt)),
+    );
+  }
+
   #findFirstSurplusTimestamp(productionDay: ProductionDay, consumptionDay: AverageConsumptionDay): DateTime | undefined {
     if (!productionDay?.production || !consumptionDay?.consumption) {
       return undefined;
@@ -110,40 +159,5 @@ export class ChargeService {
     return firstSurplusIndex > -1 ? productionDay.production[firstSurplusIndex].timestamp : undefined;
   }
 
-  monitorChargeStatus(startAt: number, stopAt: number) {
-
-    const cancelChecker = () => this.schedulerRegistry.doesExist('interval', 'charge-checker') && this.schedulerRegistry.deleteInterval('charge-checker');
-    cancelChecker();
-    const startChecker = () => {
-      let tries = 0;
-      this.schedulerRegistry.addInterval('charge-checker', setInterval(async () => {
-        try {
-          const isAutomatic = await firstValueFrom(this.sonnen.isAutomatic());
-          if (isAutomatic) {
-            await this.events.sendToUsers('Not in correct mode', `Should be in manual mode, but it is not. ${ tries + 1 }. retry`);
-            this.#logger.warn(`Is automatic. Should be manual and charging. Trying to reestablish #${ tries + 1 }`);
-            if (tries < 5) {
-              await firstValueFrom(this.sonnen.charge().pipe(
-                retry({
-                  count: 2,
-                  delay: 10000,
-                }),
-              ));
-              tries++;
-            } else {
-              this.#logger.warn('Unable to reestablish charge. Given up');
-              this.schedulerRegistry.deleteInterval('charge-checker');
-            }
-          }
-        } catch (error) {
-          this.#logger.warn('Unable to get mode', error?.message);
-        }
-      }, 30000));
-    };
-    this.schedulerRegistry.doesExist('timeout', 'charge-checker-start') && this.schedulerRegistry.deleteTimeout('charge-checker-start');
-    this.schedulerRegistry.doesExist('timeout', 'charge-checker-stop') && this.schedulerRegistry.deleteTimeout('charge-checker-stop');
-    this.schedulerRegistry.addTimeout('charge-checker-start', setTimeout(() => startChecker(), startAt));
-    this.schedulerRegistry.addTimeout('charge-checker-stop', setTimeout(() => cancelChecker(), stopAt));
-  }
 
 }

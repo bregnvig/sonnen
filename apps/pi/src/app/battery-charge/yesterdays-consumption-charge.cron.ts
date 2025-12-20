@@ -17,7 +17,7 @@ import { ChargeService } from './charge.service';
 export class YesterdaysConsumptionBasedBatteryChargeCronJob {
   readonly #logger = new Logger(YesterdaysConsumptionBasedBatteryChargeCronJob.name);
 
-  constructor(private service: SonnenService, private event: EventService, chargeService: ChargeService, private costService: CostService, private schedulerRegistry: SchedulerRegistry) {
+  constructor(service: SonnenService, event: EventService, chargeService: ChargeService, private costService: CostService, private schedulerRegistry: SchedulerRegistry) {
     this.#logger.debug(process.env.SONNEN_BATTERY_CHECK_CRON, process.env.SONNEN_BATTERY_CHARGE_WATTS);
     const job = new CronJob(process.env.SONNEN_BATTERY_CHECK_CRON, async () => {
       const status = await firstValueFrom(service.getLatestData());
@@ -28,7 +28,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
         minute: 0,
         second: 0,
       }), periodBeforeSurplusProductionInHours ?? 8);
-      const minuttes = await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({ day: 1 }));
+      const minuttes = Math.min(await chargeService.getChargeTimeBasedOnExpectedConsumptionDatesProductionAndCurrentBatteryStatus(DateTime.now().minus({ day: 1 })), await chargeService.getChargeMinutesByUSOC());
       if (minuttes > 0 && itGetsMoreExpensive) {
         const bestChargeTime = await this.getOptimalChargeTime(DateTime.now(), minuttes, periodBeforeSurplusProductionInHours);
         const chargePrice = await this.costService.getTotalCost(bestChargeTime, minuttes);
@@ -71,7 +71,11 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
           });
           await firstValueFrom(service.charge('0'));
         }, stopAt);
-        await this.#addPause(!!yesterdaysSurplusProduction, stopAt);
+        const pauseUntil = DateTime.now().set({
+          hour: yesterdaysSurplusProduction ? 6 : 7,
+          minute: 30,
+        });
+        await chargeService.addDischargePause(pauseUntil, stopAt);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-start`);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-start`, start);
@@ -164,20 +168,5 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
     } catch {
       this.#logger.debug(`No '${ name }' timeout to delete`);
     }
-  }
-
-  async #addPause(hadSurplusProductionYesterday: boolean, stopChargingAt: number) {
-    this.#cancelPreviousTimer('yesterdays-consumption-pause');
-    const stop = DateTime.now().set({
-      hour: hadSurplusProductionYesterday ? 6 : 7,
-      minute: 30,
-    }).diffNow('milliseconds').milliseconds;
-    this.schedulerRegistry.addTimeout(
-      'yesterdays-consumption-pause',
-      setTimeout(async () => {
-        await this.event.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
-        await firstValueFrom(this.service.automaticMode());
-      }, Math.max(stop, stopChargingAt)),
-    );
   }
 }

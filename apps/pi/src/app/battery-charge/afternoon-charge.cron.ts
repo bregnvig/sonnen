@@ -55,7 +55,7 @@ export class AfternoonChargeCronJob {
       const stop = setTimeout(async () => {
         const usoc = await firstValueFrom(this.sonnenService.usoc$);
         await this.eventService.sendToUsers('Eftermiddagsopladning afsluttet', `Batteriet er nu på ${ usoc }%`);
-        await firstValueFrom(this.sonnenService.stop());
+        await firstValueFrom(this.sonnenService.charge('0'));
       }, stopDelay);
 
       this.#logger.debug(`Batteriet er på ${ usoc }%. Vil blive opladet i ${ chargeTime } minutter. Starter ${ DateTime.now().plus({ millisecond: startDelay }).toFormat('HH:mm') }. Koster ${ chargePrice.toFixed(2) } kr.`);
@@ -80,6 +80,7 @@ export class AfternoonChargeCronJob {
       this.schedulerRegistry.addTimeout('afternoon-charge-start', start);
       this.chargeService.monitorChargeStatus(startDelay, stopDelay - 5000);
       this.schedulerRegistry.addTimeout('afternoon-charge-stop', stop);
+      await this.chargeService.addDischargePause(DateTime.now().set({ hour: 17, minute: 0, second: 0 }));
 
     } else {
       await this.eventService.add({
