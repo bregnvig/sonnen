@@ -121,7 +121,7 @@ export class SonnenService {
     return this.http.get<SonnenStatus>('status').pipe(
       retry({
         count: 3,
-        delay: 2000,
+        delay: 5000,
       }),
       map(response => response.data),
       map(response => sonnenMapper.status(response)),
