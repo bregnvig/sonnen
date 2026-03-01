@@ -3,6 +3,7 @@ import { converter } from '@sonnen/backend/firebase';
 import { collectionPath, documentPath, SonnenEvent, User } from '@sonnen/data';
 import { firestore } from 'firebase-admin';
 import { FirebaseService } from '../../firebase';
+import { filterUndefined } from '@sonnen/utils';
 
 
 @Injectable()
@@ -16,6 +17,7 @@ export class EventService {
   async add(event: SonnenEvent) {
     return this.firebase.db.collection('events').withConverter(converter).add(({
       ...event,
+      data: filterUndefined(event.data),
       timestamp: firestore.Timestamp.now(),
     }));
   }
