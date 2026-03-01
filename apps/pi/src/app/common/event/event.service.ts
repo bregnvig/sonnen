@@ -15,9 +15,9 @@ export class EventService {
   }
 
   async add(event: SonnenEvent) {
-    return this.firebase.db.collection('events').withConverter(converter).add(({
+    return this.firebase.db.collection('events').withConverter(converter).add(filterUndefined({
       ...event,
-      data: filterUndefined(event.data),
+      data: filterUndefined(event.data ?? {}),
       timestamp: firestore.Timestamp.now(),
     }));
   }
