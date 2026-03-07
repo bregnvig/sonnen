@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { OperationMode, Status } from '@sonnen/data';
 import { shareLatest } from '@sonnen/utils';
-import { BehaviorSubject, catchError, map, Observable, retry, switchMap, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, from, map, Observable, retry, switchMap, tap, timer } from 'rxjs';
 import { EventService } from '../event';
 import { SonnenConfiguration } from './sonnen-configuration.model';
 import { SonnenLatestData } from './sonnen-latest-data.model';
@@ -47,15 +47,15 @@ export class SonnenService {
       switchMap(() => this.http.post<boolean>(`setpoint/charge/${ watts }`)),
       tap(() => this.chargeStatus.next('charging')),
       map(response => response.data),
-      catchError(async error => {
+      catchError(error => {
         this.#logger.warn('Charge issues', error);
-        await this.event.add({
+        return from(this.event.add({
           title: 'Lade problemer',
           source: `${ SonnenService.name }:ChargeError`,
           type: 'error',
           message: error.message,
-        });
-        return this.automaticMode().pipe(
+        })).pipe(
+          switchMap(() => this.automaticMode()),
           map(() => false),
         );
       }),

@@ -111,12 +111,13 @@ export class ChargeService {
   }
 
 
-  async addDischargePause(pauseUntil: DateTime, stopChargingAt = 0) {
+  async timedAutomaticMode(pauseUntil: DateTime, stopChargingAt = 0, callback?: () => Promise<unknown>) {
     const stop = pauseUntil.diffNow('milliseconds').milliseconds;
     this.schedulerRegistry.doesExist('timeout', 'consumption-pause') && this.schedulerRegistry.deleteTimeout('consumption-pause');
     this.schedulerRegistry.addTimeout(
       'consumption-pause',
       setTimeout(async () => {
+        await callback();
         await this.events.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
         await firstValueFrom(this.sonnen.automaticMode());
       }, Math.max(stop, stopChargingAt)),
@@ -158,6 +159,26 @@ export class ChargeService {
     });
     return firstSurplusIndex > -1 ? productionDay.production[firstSurplusIndex].timestamp : undefined;
   }
+
+
+  async syncChargeWithSolarProduction(errHandler: (err: Error) => void) {
+    try {
+      const status = await firstValueFrom(this.sonnen.status$);
+
+      // Stop charging if battery is full
+      if (status.usoc >= 99) {
+        await firstValueFrom(this.sonnen.charge(0));
+        return false;
+      }
+
+      const excessPower = status.productionW - status.consumptionW;
+      const chargeRate = excessPower > 0 ? excessPower : 0;
+
+      return firstValueFrom(this.sonnen.charge(chargeRate));
+    } catch (err) {
+      errHandler && errHandler(err as Error);
+    }
+  };
 
 
 }

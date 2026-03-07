@@ -75,7 +75,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
           hour: yesterdaysSurplusProduction ? 6 : 7,
           minute: 30,
         });
-        await chargeService.addDischargePause(pauseUntil, stopAt);
+        await chargeService.timedAutomaticMode(pauseUntil, stopAt);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-start`);
         this.#cancelPreviousTimer(`yesterdays-consumption-charge-stop`);
         schedulerRegistry.addTimeout(`yesterdays-consumption-charge-start`, start);

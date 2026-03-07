@@ -78,18 +78,36 @@ export class AfternoonChargeCronJob {
       this.schedulerRegistry.addTimeout('afternoon-charge-start', start);
       this.chargeService.monitorChargeStatus(startDelay, stopDelay - 5000);
       this.schedulerRegistry.addTimeout('afternoon-charge-stop', stop);
-      await this.chargeService.addDischargePause(DateTime.now().set({ hour: 17, minute: 0, second: 0 }));
+      await this.chargeService.timedAutomaticMode(DateTime.now().set({ hour: 17, minute: 0, second: 0 }));
 
     } else {
-      await this.eventService.add({
-        type: 'info',
-        title: 'Opladning',
-        source: `${ AfternoonChargeCronJob.name }:AfternoonCharge`,
-        message: `Batteriet er på ${ usoc }%. Der er ingen grund til at oplade 👍`,
-        data: {
-          usoc,
-        },
-      });
+      await this.#syncChargeWithProduction(usoc);
     }
+  }
+
+  async #syncChargeWithProduction(usoc: number) {
+    await this.eventService.add({
+      type: 'info',
+      title: 'Opladning',
+      source: `${ AfternoonChargeCronJob.name }:AfternoonCharge`,
+      message: `Batteriet er på ${ usoc }%. Der er ingen grund til at oplade 👍`,
+      data: {
+        usoc,
+      },
+    });
+    const stopInterval = async () => {
+      this.schedulerRegistry.doesExist('interval', 'syncCharge') && this.schedulerRegistry.deleteInterval('syncCharge');
+    };
+    const intervalId = setInterval(async () => {
+      await this.chargeService.syncChargeWithSolarProduction(() => stopInterval());
+    }, 5000);
+    this.schedulerRegistry.addInterval('syncCharge', intervalId);
+    await this.chargeService.timedAutomaticMode(DateTime.now().set({
+      hour: 17,
+      minute: 0,
+      second: 0,
+    }), 0, () => stopInterval());
+
+
   }
 }
