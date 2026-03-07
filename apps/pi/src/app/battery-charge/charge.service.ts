@@ -167,13 +167,14 @@ export class ChargeService {
 
       // Stop charging if battery is full
       if (status.usoc >= 99) {
+        this.#logger.debug(`Battery full. Stop charging`);
         await firstValueFrom(this.sonnen.charge(0));
         return false;
       }
 
       const excessPower = status.productionW - status.consumptionW;
       const chargeRate = excessPower > 0 ? excessPower : 0;
-
+      this.#logger.debug(`Excess power charge rate: ${ chargeRate }w`);
       return firstValueFrom(this.sonnen.charge(chargeRate));
     } catch (err) {
       errHandler && errHandler(err as Error);
