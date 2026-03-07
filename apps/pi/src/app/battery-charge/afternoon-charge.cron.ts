@@ -86,6 +86,7 @@ export class AfternoonChargeCronJob {
   }
 
   async #syncChargeWithProduction(usoc: number) {
+    const initialStatus = await firstValueFrom(this.sonnenService.status$);
     await this.eventService.add({
       type: 'info',
       title: 'Opladning',
@@ -97,6 +98,16 @@ export class AfternoonChargeCronJob {
     });
     const stopInterval = async () => {
       this.schedulerRegistry.doesExist('interval', 'syncCharge') && this.schedulerRegistry.deleteInterval('syncCharge');
+      const currentStatus = await firstValueFrom(this.sonnenService.status$);
+      await this.eventService.add({
+        type: 'info',
+        title: 'Synkronisering afsluttet',
+        source: `${ AfternoonChargeCronJob.name }:AfternoonCharge`,
+        message: `Batteriet er nu på ${ currentStatus.usoc }%. En ændring på ${ currentStatus.usoc - initialStatus.usoc }%`,
+        data: {
+          usoc,
+        },
+      });
     };
     const intervalId = setInterval(async () => {
       await this.chargeService.syncChargeWithSolarProduction(() => stopInterval());
