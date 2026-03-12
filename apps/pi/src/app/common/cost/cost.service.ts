@@ -28,14 +28,15 @@ export class CostService {
   async cachePrices() {
     const start = DateTime.now().startOf('day');
     const end = DateTime.now().endOf('day');
-    this.#logger.debug(`Caching prices between ${ start.toISO() } and ${ end.toISO() } `);
     this.#cachedPrices = this.#getPrices(start, end);
+    const cached = await this.#cachedPrices;
+    this.#logger.debug(`Cached ${ cached.length } prices`);
     return this.#cachedPrices;
   }
 
 
   async getPrices(from: DateTime = DateTime.now(), to = DateTime.now()): Promise<Cost[]> {
-    const prices = await (this.#cachedPrices ?? this.cachePrices());
+    const prices = await (this.#cachedPrices || this.cachePrices());
     return prices.filter(({ date }) => date >= from && date <= to);
   }
 
