@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map, retry } from 'rxjs';
 
 // Interface for det ønskede output-objekt
 export interface WeatherPrediction {
@@ -68,14 +68,18 @@ export class WeatherService {
   }
 
   async findPredictionForHour(date: DateTime, latitude: number, longitude: number): Promise<WeatherPrediction | undefined> {
-    return this.getForecast(date, latitude, longitude).then(
-      predictions => predictions.find(prediction => prediction.timestamp.hasSame(date, 'hour')),
-    );
+    return this.getForecast(date, latitude, longitude)
+      .then(predictions => predictions.find(prediction => prediction.timestamp.hasSame(date, 'hour')))
+      .catch(() => undefined);
   }
 
   async getForecast(date: DateTime, latitude: number, longitude: number): Promise<WeatherPrediction[]> {
     const isoDate = date.toISODate();
-    return firstValueFrom(this.http.get<WeatherData>(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,cloud_cover&start_date=${isoDate}&end_date=${isoDate}`, {headers: {'Auth-Token': undefined}}).pipe(
+    return firstValueFrom(this.http.get<WeatherData>(`https://api.open-meteo.com/v1/forecast?latitude=${ latitude }&longitude=${ longitude }&hourly=temperature_2m,cloud_cover&start_date=${ isoDate }&end_date=${ isoDate }`, { headers: { 'Auth-Token': undefined } }).pipe(
+      retry({
+        count: 3,
+        delay: 5000,
+      }),
       map(response => response.data),
       map(data => parseWeatherDataFunctional(data))),
     );

@@ -177,6 +177,7 @@ export class ChargeService {
       this.#logger.debug(`Excess power charge rate: ${ chargeRate }w`);
       return firstValueFrom(this.sonnen.charge(chargeRate));
     } catch (err) {
+      this.#logger.error(`Sync with production error`, err);
       errHandler && errHandler(err as Error);
     }
   };
