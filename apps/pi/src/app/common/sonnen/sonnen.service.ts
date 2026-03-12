@@ -86,6 +86,7 @@ export class SonnenService {
   }
 
   manualMode() {
+    if (this.chargeStatus.value === 'manuel') return;
     this.chargeStatus.next('manuel');
     return this.#updateConfiguration({ EM_OperatingMode: '1' });
   }

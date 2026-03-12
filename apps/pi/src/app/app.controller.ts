@@ -65,6 +65,11 @@ export class AppController {
     return this.costService.getPrices(from, to);
   }
 
+  @Get('crash')
+  async crashApp() {
+    throw new Error('Crash my app');
+  }
+
   @Get('cost')
   async getCost(@Query('date') dateString: string = DateTime.now().toISODate(), @Query('minuttes') minuttes: number) {
     return this.costService.getTotalCost(DateTime.fromISO(dateString), minuttes);

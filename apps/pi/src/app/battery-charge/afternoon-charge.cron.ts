@@ -87,6 +87,7 @@ export class AfternoonChargeCronJob {
 
   async #syncChargeWithProduction(usoc: number) {
     const initialStatus = await firstValueFrom(this.sonnenService.status$);
+    this.#logger.debug(`Battery at ${ usoc }. No charge from grid. Sync with production`);
     await this.eventService.add({
       type: 'info',
       title: 'Opladning',

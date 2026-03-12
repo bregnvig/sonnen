@@ -168,7 +168,7 @@ export class ChargeService {
       // Stop charging if battery is full
       if (status.usoc >= 99) {
         this.#logger.debug(`Battery full. Stop charging`);
-        await firstValueFrom(this.sonnen.charge(0));
+        status.pacTotalW && await firstValueFrom(this.sonnen.charge(0));
         return false;
       }
 
