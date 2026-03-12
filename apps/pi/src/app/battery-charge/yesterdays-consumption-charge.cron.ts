@@ -115,7 +115,7 @@ export class YesterdaysConsumptionBasedBatteryChargeCronJob {
     const prices = await this.costService.getPrices(date, date.plus({ hours: periodBeforeSurplusProductionInHours }));
 
     if (prices.length === 0) {
-      this.#logger.warn('No price data available. Cannot determine optimal charge time. Starting now.');
+      this.#logger.warn('No price data available. Cannot determine optimal charge time. Starting now.', date.toISODate(), chargeMinuttes, periodBeforeSurplusProductionInHours);
       return date;
     }
 
