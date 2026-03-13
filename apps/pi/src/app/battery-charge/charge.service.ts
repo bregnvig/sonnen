@@ -117,7 +117,7 @@ export class ChargeService {
     this.schedulerRegistry.addTimeout(
       'consumption-pause',
       setTimeout(async () => {
-        await callback();
+        callback && await callback();
         await this.events.sendToUsers('Pause afsluttet', 'Batteriet vil igen blive benyttet');
         await firstValueFrom(this.sonnen.automaticMode());
       }, Math.max(stop, stopChargingAt)),
